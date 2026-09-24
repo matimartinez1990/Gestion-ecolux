@@ -4,8 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ecolux - Sistema de Gestión Integral</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- SheetJS para lectura de Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- Chart.js para Gráficos -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .ecolux-primary { background-color: #005b7f; }
@@ -15,10 +20,11 @@
 </head>
 <body class="bg-slate-100 font-sans text-slate-800">
 
-    <!-- LOGIN -->
+    <!-- PANTALLA DE LOGIN -->
     <div id="login-screen" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-50 p-4">
         <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-8 space-y-6">
             <div class="text-center space-y-3 flex flex-col items-center">
+                <!-- Logo Oficial Ecolux Estilizado -->
                 <div class="flex items-center gap-1 font-black text-2xl tracking-tighter select-none py-1">
                     <span class="ecolux-text">ecol</span><span class="text-amber-400 font-bold px-0.5"><i class="fa-solid fa-sun text-xl"></i></span><span class="ecolux-text">lux</span>
                 </div>
@@ -26,70 +32,417 @@
                 <p class="text-xs text-slate-500 pt-1">Av. Dorrego 2646, CABA</p>
             </div>
             <form onsubmit="handleLogin(event)" class="space-y-4">
-                <div><label class="block text-xs font-bold text-slate-700 uppercase mb-1">Usuario</label><input type="text" id="login-user" placeholder="Usuario" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm"></div>
-                <div><label class="block text-xs font-bold text-slate-700 uppercase mb-1">Contraseña</label><input type="password" id="login-pass" placeholder="••••••••" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm"></div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Usuario</label>
+                    <input type="text" id="login-user" placeholder="Usuario" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-[#005b7f]">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Contraseña</label>
+                    <input type="password" id="login-pass" placeholder="••••••••" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-[#005b7f]">
+                </div>
                 <button type="submit" class="w-full py-3.5 ecolux-primary ecolux-primary-hover text-white font-bold rounded-xl shadow-lg transition text-sm">Iniciar Sesión</button>
             </form>
+            <div class="p-3 bg-slate-50 rounded-xl text-center text-xs text-slate-500">
+                🔐 Acceso autorizado para personal y colaboradores de Ecolux.
+            </div>
         </div>
     </div>
 
-    <!-- APP CONTAINER -->
+    <!-- APLICACIÓN PRINCIPAL -->
     <div id="app-container" class="flex h-screen overflow-hidden hidden">
         <aside class="w-72 bg-slate-900 text-white flex flex-col shadow-xl">
-            <div class="p-6 border-b border-slate-800 flex items-center gap-3">
-                <div class="bg-white/10 p-2.5 rounded-xl"><span class="font-black text-lg"><span class="text-cyan-400">eco</span><span class="text-amber-400"><i class="fa-solid fa-sun"></i></span><span class="text-cyan-400">lux</span></span></div>
-                <div><h2 class="text-lg font-black tracking-wider">ECOLUX</h2><p class="text-[9px] text-cyan-400 font-semibold uppercase">Excelencia en Limpieza</p></div>
+            <div class="p-6 border-b border-slate-800 flex flex-col gap-1">
+                <div class="flex items-center gap-3">
+                    <!-- Logo Oficial Sidebar -->
+                    <div class="bg-white/10 p-2.5 rounded-xl flex items-center justify-center shadow-md">
+                        <span class="font-black text-lg tracking-tighter"><span class="text-cyan-400">eco</span><span class="text-amber-400 text-xs px-0.5"><i class="fa-solid fa-sun"></i></span><span class="text-cyan-400">lux</span></span>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-black tracking-wider text-white">ECOLUX</h2>
+                        <p class="text-[9px] text-cyan-400 font-semibold uppercase tracking-widest">Excelencia en Limpieza</p>
+                    </div>
+                </div>
             </div>
+
             <nav class="flex-1 p-4 space-y-1.5 overflow-y-auto">
-                <button onclick="switchTab('dashboard')" id="btn-dashboard" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition ecolux-primary text-white font-medium"><i class="fa-solid fa-chart-pie w-5"></i> Dashboard</button>
+                <button onclick="switchTab('dashboard')" id="btn-dashboard" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition ecolux-primary text-white font-medium shadow-md"><i class="fa-solid fa-chart-pie w-5"></i> Dashboard</button>
                 <button onclick="switchTab('operarios')" id="btn-operarios" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-800 text-slate-300"><i class="fa-solid fa-users w-5"></i> Operarios</button>
                 <button onclick="switchTab('clientes')" id="btn-clientes" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-800 text-slate-300"><i class="fa-solid fa-building w-5"></i> Clientes</button>
+                <button onclick="switchTab('personal')" id="btn-personal" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-800 text-slate-300"><i class="fa-solid fa-id-badge w-5"></i> Pers. Oficial</button>
+                <button onclick="switchTab('proveedores')" id="btn-proveedores" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-800 text-slate-300"><i class="fa-solid fa-truck-fast w-5"></i> Proveedores</button>
+                <button onclick="switchTab('numeros')" id="btn-numeros" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-800 text-slate-300"><i class="fa-solid fa-address-book w-5"></i> Números y ART</button>
                 <button onclick="switchTab('vehiculos')" id="btn-vehiculos" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-800 text-slate-300"><i class="fa-solid fa-car w-5"></i> Vehículos</button>
                 <button onclick="switchTab('tareas')" id="btn-tareas" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-800 text-slate-300"><i class="fa-solid fa-list-check w-5"></i> Tareas</button>
                 <button onclick="switchTab('facturas')" id="btn-facturas" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-800 text-slate-300"><i class="fa-solid fa-file-invoice-dollar w-5"></i> Facturas</button>
+                <button onclick="switchTab('retenciones')" id="btn-retenciones" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-800 text-slate-300"><i class="fa-solid fa-percent w-5"></i> Retenciones</button>
             </nav>
-            <div class="p-4 border-t border-slate-800 bg-slate-950 space-y-3" id="sidebar-upload-container">
-                <label class="block text-[11px] text-slate-400 font-semibold mb-1">SUBIR EXCEL / WORD (Permanente):</label>
-                <input type="file" id="fileUpload" accept=".xlsx, .xls, .docx" onchange="subirArchivoPermanente(event)" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold ecolux-primary file:text-white cursor-pointer">
-                <div class="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-slate-800">
+            <div class="p-4 border-t border-slate-800 bg-slate-950 space-y-3">
+                <div class="flex items-center justify-between text-xs text-slate-400">
                     <span>Usuario: <strong id="current-user-display" class="text-emerald-400">ecolux</strong></span>
                     <button onclick="logout()" class="text-red-400 hover:text-red-300 font-semibold underline">Salir</button>
+                </div>
+                <div id="sidebar-upload-container">
+                    <label class="block text-[11px] text-slate-400 font-semibold mb-1">SUBIR EXCEL COMPLETO:</label>
+                    <input type="file" id="excelFile" accept=".xls, .xlsx" class="w-full text-xs text-slate-400 file:mr-2 file:py-1.5 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold ecolux-primary file:text-white hover:file:opacity-90 cursor-pointer">
                 </div>
             </div>
         </aside>
 
+        <!-- Main Content -->
         <main class="flex-1 flex flex-col overflow-y-auto">
             <header class="bg-white shadow-sm h-16 flex items-center justify-between px-8 border-b border-slate-200">
                 <h1 id="page-title" class="text-xl font-bold text-slate-800">📊 Dashboard Interactivo</h1>
-                <span id="role-badge" class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-semibold">🟢 Modo Edición</span>
+                <div class="flex items-center gap-4">
+                    <span class="text-xs text-slate-500 font-medium">Av. Dorrego 2646, CABA | 4777-9336</span>
+                    <span id="role-badge" class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-semibold">🟢 Modo Edición</span>
+                </div>
             </header>
 
             <div class="p-8 space-y-6">
                 <!-- DASHBOARD -->
                 <div id="view-dashboard" class="space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
                         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200"><p class="text-xs font-medium text-slate-500 uppercase">Total Operarios</p><h3 id="kpi-operarios" class="text-2xl font-bold text-slate-800 mt-1">0</h3></div>
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200"><p class="text-xs font-medium text-emerald-600 uppercase">Activos (Op.)</p><h3 id="kpi-activos" class="text-2xl font-bold text-emerald-600 mt-1">0</h3></div>
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200"><p class="text-xs font-medium text-red-600 uppercase">Inactivos (Op.)</p><h3 id="kpi-inactivos" class="text-2xl font-bold text-red-600 mt-1">0</h3></div>
                         <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200"><p class="text-xs font-medium text-slate-500 uppercase">Total Clientes</p><h3 id="kpi-clientes" class="text-2xl font-bold text-slate-800 mt-1">0</h3></div>
-                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200"><p class="text-xs font-medium text-slate-500 uppercase">Vehículos Registrados</p><h3 id="kpi-vehiculos" class="text-2xl font-bold text-slate-800 mt-1">0</h3></div>
-                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200"><p class="text-xs font-medium text-slate-500 uppercase">Facturas Pendientes</p><h3 id="kpi-facturas" class="text-2xl font-bold text-amber-600 mt-1">0</h3></div>
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200"><p class="text-xs font-medium text-emerald-600 uppercase">Clientes Activos</p><h3 id="kpi-clientes-activos" class="text-2xl font-bold text-emerald-600 mt-1">0</h3></div>
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200"><p class="text-xs font-medium text-red-600 uppercase">Clientes Inactivos</p><h3 id="kpi-clientes-inactivos" class="text-2xl font-bold text-red-600 mt-1">0</h3></div>
+                    </div>
+
+                    <!-- Fila de Tareas Pendientes en Dashboard -->
+                    <div class="grid grid-cols-1 sm:grid-cols-1 gap-4">
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Tareas Pendientes de Ejecución</p>
+                                <h3 id="kpi-tareas-pendientes" class="text-2xl font-bold text-amber-600 mt-1">0</h3>
+                            </div>
+                            <div class="bg-amber-50 text-amber-600 p-3 rounded-xl text-xl">
+                                <i class="fa-solid fa-list-check"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col">
+                            <h3 class="font-bold text-slate-700 mb-3"><i class="fa-solid fa-clock ecolux-text mr-2"></i> Detalle de Antigüedad del Personal</h3>
+                            <div class="flex-1 overflow-y-auto max-h-60 space-y-2 pr-2" id="dashboard-antiguedad-list"></div>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                            <h3 class="font-bold text-slate-700 mb-4">Operarios por Categoría</h3>
+                            <div class="h-52 flex items-center justify-center"><canvas id="chartCategorias"></canvas></div>
+                        </div>
+                    </div>
+
+                    <!-- Tareas Prioritarias Hoy y Mañana -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-slate-100 bg-slate-50 flex justify-between items-center">
+                            <h3 class="font-bold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-calendar-day ecolux-text"></i> Tareas Prioritarias (Hoy y Mañana)
+                            </h3>
+                            <span class="text-xs text-slate-500">Haz clic en una fila para ver detalles</span>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50/70 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-100">
+                                        <th class="px-6 py-3 font-semibold">Fecha</th>
+                                        <th class="px-6 py-3 font-semibold">Detalle de la Tarea</th>
+                                        <th class="px-6 py-3 font-semibold">Estado</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dashboard-tasks-table" class="divide-y divide-slate-100 text-sm"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-3">
+                        <h3 class="font-bold text-slate-700 flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation text-amber-500"></i> Estado de Vencimiento VTV de Vehículos</h3>
+                        <div id="vtv-alerts-container" class="grid grid-cols-1 md:grid-cols-3 gap-3"></div>
                     </div>
                 </div>
 
-                <!-- VEHÍCULOS (Con Motor, Chasis, VTV y Seguro) -->
-                <div id="view-vehiculos" class="hidden space-y-6">
-                    <div class="flex justify-between items-center">
-                        <h2 class="text-lg font-bold">Gestión de Vehículos</h2>
-                        <button id="btn-add-vehiculos" onclick="openModalAdd('vehiculos')" class="ecolux-primary text-white font-medium px-5 py-2.5 rounded-xl shadow-md text-sm"><i class="fa-solid fa-car"></i> Agregar Vehículo</button>
+                <!-- OPERARIOS -->
+                <div id="view-operarios" class="hidden space-y-6">
+                    <div class="flex justify-between items-center gap-4">
+                        <input type="text" id="searchOperario" placeholder="Buscar operario..." class="flex-1 p-3 bg-white border border-slate-200 rounded-xl text-sm shadow-sm">
+                        <button id="btn-add-operarios" onclick="openModalAdd('operarios')" class="ecolux-primary ecolux-primary-hover text-white font-medium px-5 py-3 rounded-xl shadow-md transition flex items-center gap-2"><i class="fa-solid fa-user-plus"></i> Agregar</button>
                     </div>
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                         <table class="w-full text-left border-collapse">
-                            <thead><tr class="bg-slate-50 border-b text-xs font-semibold text-slate-500 uppercase"><th class="p-4">Vehículo</th><th class="p-4">Patente</th><th class="p-4">Chasis</th><th class="p-4">Motor</th><th class="p-4">Seguro</th><th class="p-4">Vto. VTV</th><th class="p-4 text-center action-col">Acciones</th></tr></thead>
+                            <thead><tr class="bg-slate-50 border-b text-xs font-semibold text-slate-500 uppercase"><th class="p-4">Legajo</th><th class="p-4">Apellido y Nombre</th><th class="p-4">Antigüedad</th><th class="p-4">Estado</th><th class="p-4">Categoría</th><th class="p-4 text-center action-col">Acciones</th></tr></thead>
+                            <tbody id="table-operarios-body" class="divide-y text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- CLIENTES -->
+                <div id="view-clientes" class="hidden space-y-6">
+                    <div class="flex justify-between items-center gap-4">
+                        <input type="text" id="searchCliente" placeholder="Buscar cliente..." class="flex-1 p-3 bg-white border border-slate-200 rounded-xl text-sm shadow-sm">
+                        <button id="btn-add-clientes" onclick="openModalAdd('clientes')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-5 py-3 rounded-xl shadow-md transition flex items-center gap-2"><i class="fa-solid fa-building-user"></i> Agregar</button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead><tr class="bg-slate-50 border-b text-xs font-semibold text-slate-500 uppercase"><th class="p-4">Razón Social</th><th class="p-4">Dirección</th><th class="p-4">Estado</th><th class="p-4 text-center action-col">Acciones</th></tr></thead>
+                            <tbody id="table-clientes-body" class="divide-y text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- PERSONAL OFICIAL -->
+                <div id="view-personal" class="hidden space-y-6">
+                    <div class="flex justify-between items-center gap-4">
+                        <input type="text" id="searchPersonal" placeholder="Buscar personal..." class="flex-1 p-3 bg-white border border-slate-200 rounded-xl text-sm shadow-sm">
+                        <button id="btn-add-personal" onclick="openModalAdd('personal')" class="ecolux-primary ecolux-primary-hover text-white font-medium px-5 py-3 rounded-xl shadow-md transition flex items-center gap-2"><i class="fa-solid fa-user-plus"></i> Agregar</button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead><tr class="bg-slate-50 border-b text-xs font-semibold text-slate-500 uppercase"><th class="p-4">Apellido y Nombre</th><th class="p-4">Celular Ecolux</th><th class="p-4 text-center action-col">Acciones</th></tr></thead>
+                            <tbody id="table-personal-body" class="divide-y text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- PROVEEDORES -->
+                <div id="view-proveedores" class="hidden space-y-6">
+                    <div class="flex justify-between items-center gap-4">
+                        <input type="text" id="searchProveedor" placeholder="Buscar proveedor..." class="flex-1 p-3 bg-white border border-slate-200 rounded-xl text-sm shadow-sm">
+                        <button id="btn-add-proveedores" onclick="openModalAdd('proveedores')" class="ecolux-primary ecolux-primary-hover text-white font-medium px-5 py-3 rounded-xl shadow-md transition flex items-center gap-2"><i class="fa-solid fa-truck"></i> Agregar</button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead><tr class="bg-slate-50 border-b text-xs font-semibold text-slate-500 uppercase"><th class="p-4">Proveedor</th><th class="p-4 text-center action-col">Acciones</th></tr></thead>
+                            <tbody id="table-proveedores-body" class="divide-y text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- NÚMEROS Y ART -->
+                <div id="view-numeros" class="hidden space-y-6">
+                    <div class="flex justify-between items-center gap-4">
+                        <input type="text" id="searchNumero" placeholder="Buscar concepto..." class="flex-1 p-3 bg-white border border-slate-200 rounded-xl text-sm shadow-sm">
+                        <button id="btn-add-numeros" onclick="openModalAdd('numeros')" class="ecolux-primary ecolux-primary-hover text-white font-medium px-5 py-3 rounded-xl shadow-md transition flex items-center gap-2"><i class="fa-solid fa-plus"></i> Agregar</button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead><tr class="bg-slate-50 border-b text-xs font-semibold text-slate-500 uppercase"><th class="p-4">Concepto</th><th class="p-4 text-center action-col">Acciones</th></tr></thead>
+                            <tbody id="table-numeros-body" class="divide-y text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- VEHÍCULOS -->
+                <div id="view-vehiculos" class="hidden space-y-6">
+                    <div class="flex justify-between items-center gap-4">
+                        <input type="text" id="searchVehiculo" placeholder="Buscar vehículo..." class="flex-1 p-3 bg-white border border-slate-200 rounded-xl text-sm shadow-sm">
+                        <button id="btn-add-vehiculos" onclick="openModalAdd('vehiculos')" class="ecolux-primary ecolux-primary-hover text-white font-medium px-5 py-3 rounded-xl shadow-md transition flex items-center gap-2"><i class="fa-solid fa-car"></i> Agregar</button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead><tr class="bg-slate-50 border-b text-xs font-semibold text-slate-500 uppercase"><th class="p-4">Vehículo</th><th class="p-4">Patente</th><th class="p-4">Vencimiento VTV</th><th class="p-4 text-center action-col">Acciones</th></tr></thead>
                             <tbody id="table-vehiculos-body" class="divide-y text-sm"></tbody>
                         </table>
                     </div>
                 </div>
+
+                <!-- TAREAS -->
+                <div id="view-tareas" class="hidden space-y-6">
+                    <div id="form-tarea-container" class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                        <h3 class="font-semibold text-slate-800 mb-3 text-sm">Nueva Tarea</h3>
+                        <form onsubmit="handleTareaSubmit(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Fecha de la Tarea</label>
+                                <input type="date" id="tarea-fecha" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#005b7f] focus:outline-none">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Detalle de la Tarea</label>
+                                <input type="text" id="tarea-detalle" placeholder="Ej. Revisar arqueo de caja..." required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#005b7f] focus:outline-none">
+                            </div>
+                            <div>
+                                <button type="submit" class="w-full ecolux-primary ecolux-primary-hover text-white font-medium py-2 px-4 rounded-xl text-sm transition shadow-sm">Agregar Tarea</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="p-4 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row justify-between items-center gap-4">
+                            <h3 class="font-bold text-slate-800 text-sm">Listado de Tareas</h3>
+                            <div class="w-full sm:w-72">
+                                <input type="text" id="buscador-tareas" oninput="renderTareas()" placeholder="Buscar por detalle..." class="w-full rounded-xl border border-slate-300 px-3 py-1.5 text-sm focus:ring-2 focus:ring-[#005b7f] focus:outline-none bg-white">
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-100">
+                                        <th class="px-6 py-3 font-semibold">Fecha</th>
+                                        <th class="px-6 py-3 font-semibold">Detalle</th>
+                                        <th class="px-6 py-3 font-semibold">Estado</th>
+                                        <th class="px-6 py-3 font-semibold text-right action-col">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-tareas-body" class="divide-y divide-slate-100 text-sm"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FACTURAS -->
+                <div id="view-facturas" class="hidden space-y-6">
+                    <!-- Ventana / Tarjeta de Total Pendiente de Pago -->
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Total Facturado Pendiente de Pago</p>
+                            <h3 id="kpi-facturas-pendiente-monto" class="text-2xl font-bold text-rose-600 mt-1">$0.00</h3>
+                        </div>
+                        <div class="bg-rose-50 text-rose-600 p-3 rounded-xl text-xl">
+                            <i class="fa-solid fa-file-invoice-dollar"></i>
+                        </div>
+                    </div>
+
+                    <div id="form-factura-container" class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                        <h3 class="font-semibold text-slate-800 mb-3 text-sm">Registrar Factura</h3>
+                        <form onsubmit="handleFacturaSubmit(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Nº de Factura</label>
+                                <input type="text" id="factura-numero" placeholder="0001-00001234" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#005b7f] focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Fecha de Vencimiento</label>
+                                <input type="date" id="factura-vencimiento" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#005b7f] focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Razón Social</label>
+                                <input type="text" id="factura-razon" placeholder="Nombre cliente/proveedor" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#005b7f] focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Monto Total ($)</label>
+                                <input type="number" step="0.01" id="factura-monto" placeholder="0.00" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#005b7f] focus:outline-none">
+                            </div>
+                            <div>
+                                <button type="submit" class="w-full ecolux-primary ecolux-primary-hover text-white font-medium py-2 px-4 rounded-xl text-sm transition shadow-sm">Guardar Factura</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="p-4 border-b border-slate-100 bg-slate-50 flex flex-col md:flex-row justify-between items-center gap-4">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Filtrar:</span>
+                                <div class="inline-flex rounded-xl bg-slate-200 p-1 text-xs font-medium">
+                                    <button onclick="setFiltroFacturas('Todas')" id="btn-factura-todas" class="px-3 py-1.5 rounded-lg bg-white text-slate-800 shadow-sm transition font-semibold">Todas</button>
+                                    <button onclick="setFiltroFacturas('Pendiente')" id="btn-factura-pendientes" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-800 transition">Pendientes</button>
+                                    <button onclick="setFiltroFacturas('Abonada')" id="btn-factura-abonadas" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-800 transition">Abonadas</button>
+                                </div>
+                            </div>
+                            <div class="w-full md:w-72">
+                                <input type="text" id="buscador-facturas" oninput="renderFacturas()" placeholder="Buscar por Nº o Razón Social..." class="w-full rounded-xl border border-slate-300 px-3 py-1.5 text-sm focus:ring-2 focus:ring-[#005b7f] focus:outline-none bg-white">
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-100">
+                                        <th class="px-6 py-3 font-semibold">Nº Factura</th>
+                                        <th class="px-6 py-3 font-semibold">Vencimiento</th>
+                                        <th class="px-6 py-3 font-semibold">Razón Social</th>
+                                        <th class="px-6 py-3 font-semibold">Monto Total</th>
+                                        <th class="px-6 py-3 font-semibold">Estado</th>
+                                        <th class="px-6 py-3 font-semibold text-right action-col">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-facturas-body" class="divide-y divide-slate-100 text-sm"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RETENCIONES -->
+                <div id="view-retenciones" class="hidden space-y-6">
+                    <!-- Ventana / Tarjeta de Total de Retenciones Pendientes -->
+                    <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-medium text-slate-500 uppercase tracking-wider">Total de Retenciones Pendientes</p>
+                            <h3 id="kpi-retenciones-pendiente-monto" class="text-2xl font-bold text-indigo-600 mt-1">$0.00</h3>
+                        </div>
+                        <div class="bg-indigo-50 text-indigo-600 p-3 rounded-xl text-xl">
+                            <i class="fa-solid fa-percent"></i>
+                        </div>
+                    </div>
+
+                    <div id="form-retencion-container" class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                        <h3 class="font-semibold text-slate-800 mb-3 text-sm">Registrar / Calcular Retención</h3>
+                        <form onsubmit="handleRetencionSubmit(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Seleccionar Factura</label>
+                                <select id="retencion-factura-select" onchange="onSelectFacturaRetencion()" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#005b7f] focus:outline-none bg-white">
+                                    <option value="">-- Seleccione factura --</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Razón Social</label>
+                                <input type="text" id="retencion-razon" readonly placeholder="Auto-completado" class="w-full rounded-xl border border-slate-200 bg-slate-100 px-3 py-2 text-sm text-slate-600">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Importe Abonado ($)</label>
+                                <input type="number" step="0.01" id="retencion-abonado" placeholder="0.00" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#005b7f] focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-600 mb-1">Estado</label>
+                                <select id="retencion-estado" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#005b7f] focus:outline-none bg-white">
+                                    <option value="Pendiente">Pendiente</option>
+                                    <option value="Abonada">Abonada</option>
+                                </select>
+                            </div>
+                            <div>
+                                <button type="submit" class="w-full ecolux-primary ecolux-primary-hover text-white font-medium py-2 px-4 rounded-xl text-sm transition shadow-sm">Guardar Retención</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="p-4 border-b border-slate-100 bg-slate-50 flex flex-col md:flex-row justify-between items-center gap-4">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">Filtrar:</span>
+                                <div class="inline-flex rounded-xl bg-slate-200 p-1 text-xs font-medium">
+                                    <button onclick="setFiltroRetenciones('Todas')" id="btn-retencion-todas" class="px-3 py-1.5 rounded-lg bg-white text-slate-800 shadow-sm transition font-semibold">Todas</button>
+                                    <button onclick="setFiltroRetenciones('Pendiente')" id="btn-retencion-pendientes" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-800 transition">Pendientes</button>
+                                    <button onclick="setFiltroRetenciones('Abonada')" id="btn-retencion-abonadas" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-800 transition">Abonadas</button>
+                                </div>
+                            </div>
+                            <div class="w-full md:w-72">
+                                <input type="text" id="buscador-retenciones" oninput="renderRetenciones()" placeholder="Buscar por Nº factura o razón social..." class="w-full rounded-xl border border-slate-300 px-3 py-1.5 text-sm focus:ring-2 focus:ring-[#005b7f] focus:outline-none bg-white">
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-slate-50/70 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-100">
+                                        <th class="px-6 py-3 font-semibold">Nº Factura</th>
+                                        <th class="px-6 py-3 font-semibold">Razón Social</th>
+                                        <th class="px-6 py-3 font-semibold">Monto Total</th>
+                                        <th class="px-6 py-3 font-semibold">Importe Abonado</th>
+                                        <th class="px-6 py-3 font-semibold">Retención Calculada</th>
+                                        <th class="px-6 py-3 font-semibold">Estado</th>
+                                        <th class="px-6 py-3 font-semibold text-right action-col">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabla-retenciones-body" class="divide-y divide-slate-100 text-sm"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </main>
+    </div>
+
+    <!-- MODAL DETALLE GENERAL / FINANCIERO -->
+    <div id="modal-detail" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
+            <div class="ecolux-primary px-6 py-4 text-white flex justify-between items-center"><h3 id="modal-title" class="font-bold text-lg">Detalle</h3><button onclick="closeModal('modal-detail')" class="text-white text-xl font-bold">&times;</button></div>
+            <div class="p-6 space-y-3 text-slate-700 text-sm" id="modal-body"></div>
+            <div class="bg-slate-50 px-6 py-4 flex justify-end"><button onclick="closeModal('modal-detail')" class="px-5 py-2 bg-slate-200 rounded-xl font-medium text-sm">Cerrar</button></div>
+        </div>
     </div>
 
     <!-- MODAL FORMULARIO -->
@@ -99,132 +452,898 @@
             <form onsubmit="handleFormSubmit(event)" class="space-y-3">
                 <div id="form-fields" class="space-y-3"></div>
                 <div class="flex justify-end gap-2 pt-3 border-t">
-                    <button type="button" onclick="closeModal('modal-form')" class="px-4 py-2 bg-slate-200 rounded-xl text-sm">Cancelar</button>
-                    <button type="submit" class="px-4 py-2 ecolux-primary text-white rounded-xl text-sm">Guardar</button>
+                    <button type="button" onclick="closeModal('modal-form')" class="px-4 py-2 bg-slate-200 rounded-xl text-sm font-medium">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 ecolux-primary text-white rounded-xl text-sm font-medium">Guardar</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        let db = { operarios: [], clientes: [], vehiculos: [], facturas: [] };
+        let db = JSON.parse(localStorage.getItem('ecolux_complete_db')) || {
+            operarios: [],
+            clientes: [],
+            personal: [],
+            proveedores: [],
+            numeros: [],
+            vehiculos: [],
+            tareas: [
+                { id: 1, fecha: new Date().toISOString().split('T')[0], detalle: 'Verificar inventario general de almacén', estado: 'Pendiente' },
+                { id: 2, fecha: new Date(Date.now() + 86400000).toISOString().split('T')[0], detalle: 'Reunión con proveedores externos', estado: 'Pendiente' }
+            ],
+            facturas: [
+                { id: 1, numero: '0001-00000150', vencimiento: '2026-04-15', razon: 'Distribuidora del Sur SA', monto: 125000, estado: 'Pendiente' },
+                { id: 2, numero: '0001-00000151', vencimiento: '2026-04-20', razon: 'Logística Norte SRL', monto: 84000, estado: 'Abonada' }
+            ],
+            retenciones: [
+                { id: 1, facturaId: 2, numero: '0001-00000151', razon: 'Logística Norte SRL', montoTotal: 84000, abonado: 80000, estado: 'Abonada' }
+            ]
+        };
+
+        let isLoggedIn = localStorage.getItem('ecolux_logged') === 'true';
         let currentUserRole = localStorage.getItem('ecolux_user_role') || 'ecolux';
+        let chartInstance = null;
         let currentEditingType = null;
-        let currentEditingId = null;
+        let currentEditingIdx = null;
+        let filtroFacturasActual = 'Todas';
+        let filtroRetencionesActual = 'Todas';
 
-        async function fetchData() {
-            try {
-                let resOp = await fetch('/api/operarios'); db.operarios = await resOp.json();
-                let resCli = await fetch('/api/clientes'); db.clientes = await resCli.json();
-                let resVeh = await fetch('/api/vehiculos'); db.vehiculos = await resVeh.json();
-                let resFac = await fetch('/api/facturas'); db.facturas = await resFac.json();
-                renderDashboard();
-            } catch(e) { console.error(e); }
-        }
-
-        if(localStorage.getItem('ecolux_logged') === 'true') {
+        if(isLoggedIn) {
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('app-container').classList.remove('hidden');
-            fetchData();
+            applyUserPermissions();
+            renderDashboard();
         }
 
         function handleLogin(e) {
             e.preventDefault();
-            const u = document.getElementById('login-user').value.trim().toLowerCase();
-            const p = document.getElementById('login-pass').value.trim();
-            if(u === 'ecolux' && p === 'Dorrego2646*') currentUserRole = 'ecolux';
-            else if(u === 'invitados' && p === 'Ecolux2646*') currentUserRole = 'invitados';
-            else { alert("Datos incorrectos. Por favor, vuelva a ingresar los datos."); return; }
-
-            localStorage.setItem('ecolux_logged', 'true');
-            localStorage.setItem('ecolux_user_role', currentUserRole);
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('app-container').classList.remove('hidden');
-            fetchData();
+            const user = document.getElementById('login-user').value.trim().toLowerCase();
+            const pass = document.getElementById('login-pass').value.trim();
+            
+            if(user === 'ecolux' && pass === 'Dorrego2646*') {
+                currentUserRole = 'ecolux';
+                isLoggedIn = true;
+                localStorage.setItem('ecolux_logged', 'true');
+                localStorage.setItem('ecolux_user_role', 'ecolux');
+                initAppAfterLogin();
+            } else if(user === 'invitados' && pass === 'Ecolux2646*') {
+                currentUserRole = 'invitados';
+                isLoggedIn = true;
+                localStorage.setItem('ecolux_logged', 'true');
+                localStorage.setItem('ecolux_user_role', 'invitados');
+                initAppAfterLogin();
+            } else {
+                alert("Datos incorrectos. Por favor, vuelva a ingresar los datos.");
+                document.getElementById('login-pass').value = '';
+                document.getElementById('login-user').focus();
+            }
         }
 
-        async function subirArchivoPermanente(event) {
-            const file = event.target.files[0];
-            if(!file) return;
-            const formData = new FormData();
-            formData.append('archivo', file);
-            try {
-                let res = await fetch('/api/upload-file', { method: 'POST', body: formData });
-                let data = await res.json();
-                alert(data.message || 'Archivo subido y guardado exitosamente.');
-                fetchData();
-            } catch(e) { alert('Error al subir el archivo.'); }
+        function initAppAfterLogin() {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('hidden');
+            applyUserPermissions();
+            renderDashboard();
+        }
+
+        function applyUserPermissions() {
+            const roleDisplay = document.getElementById('current-user-display');
+            const roleBadge = document.getElementById('role-badge');
+            const uploadContainer = document.getElementById('sidebar-upload-container');
+
+            if(currentUserRole === 'invitados') {
+                if(roleDisplay) { roleDisplay.innerText = 'invitados'; roleDisplay.className = "text-amber-400"; }
+                if(roleBadge) { roleBadge.innerText = '👁️ Modo Lectura'; roleBadge.className = "px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-semibold"; }
+                if(uploadContainer) uploadContainer.style.display = 'none';
+
+                ['btn-add-operarios', 'btn-add-clientes', 'btn-add-personal', 'btn-add-proveedores', 'btn-add-numeros', 'btn-add-vehiculos', 'form-tarea-container', 'form-factura-container', 'form-retencion-container'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if(el) el.style.display = 'none';
+                });
+
+                document.querySelectorAll('.action-col').forEach(col => col.style.display = 'none');
+            } else {
+                if(roleDisplay) { roleDisplay.innerText = 'ecolux'; roleDisplay.className = "text-emerald-400"; }
+                if(roleBadge) { roleBadge.innerText = '🟢 Modo Edición'; roleBadge.className = "px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-semibold"; }
+                if(uploadContainer) uploadContainer.style.display = 'block';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('ecolux_logged');
+            localStorage.removeItem('ecolux_user_role');
+            location.reload();
+        }
+
+        function persistData() {
+            if(currentUserRole === 'invitados') return;
+            localStorage.setItem('ecolux_complete_db', JSON.stringify(db));
+            renderDashboard();
+            refreshCurrentView();
+        }
+
+        function parseExcelDate(val) {
+            if(!val) return "";
+            if(typeof val === 'number') {
+                const date = new Date(Math.round((val - (25567 + 2)) * 86400 * 1000));
+                return date.toISOString().split('T')[0];
+            }
+            let str = String(val).trim();
+            if(str.includes('/')) {
+                let parts = str.split('/');
+                if(parts.length === 3) {
+                    let year = parts[2].length === 2 ? '20' + parts[2] : parts[2];
+                    return `${year}-${parts[1].padStart(2,'0')}-${parts[0].padStart(2,'0')}`;
+                }
+            }
+            return str.substring(0, 10);
+        }
+
+        function normalizarCategoria(cat) {
+            if(!cat) return 'General';
+            let limpia = String(cat).trim().toLowerCase();
+            if(limpia === 'oficial' || limpia === 'oficiales') return 'Oficial';
+            if(limpia === 'operario' || limpia === 'operarios' || limpia === 'general') return 'Operario General';
+            return String(cat).trim().replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+        }
+
+        function calcularAntiguedadDetalle(fechaIngreso) {
+            if(!fechaIngreso) return { anos: 0, texto: "N/D" };
+            const ingreso = new Date(fechaIngreso);
+            const hoy = new Date();
+            let anos = hoy.getFullYear() - ingreso.getFullYear();
+            let meses = hoy.getMonth() - ingreso.getMonth();
+            if (meses < 0 || (meses === 0 && hoy.getDate() < ingreso.getDate())) {
+                anos--;
+                meses += 12;
+            }
+            if (anos < 0) return { anos: 0, texto: "0 años" };
+            return { anos: anos, texto: `${anos} ${anos === 1 ? 'año' : 'años'} ${meses > 0 ? 'y ' + meses + 'm' : ''}` };
         }
 
         function switchTab(tab) {
-            ['dashboard', 'vehiculos'].forEach(t => {
+            ['dashboard', 'operarios', 'clientes', 'personal', 'proveedores', 'numeros', 'vehiculos', 'tareas', 'facturas', 'retenciones'].forEach(t => {
                 const el = document.getElementById(`view-${t}`);
                 if(el) el.classList.add('hidden');
+                const btn = document.getElementById(`btn-${t}`);
+                if(btn) btn.className = "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-800 text-slate-300";
             });
             document.getElementById(`view-${tab}`).classList.remove('hidden');
+            document.getElementById(`btn-${tab}`).className = "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition ecolux-primary text-white font-medium shadow-md";
+            
+            const titles = { 
+                dashboard: "📊 Dashboard Interactivo", 
+                operarios: "👥 Gestión de Operarios", 
+                clientes: "🏢 Gestión de Clientes", 
+                personal: "🆔 Personal Oficial", 
+                proveedores: "🚛 Proveedores", 
+                numeros: "📞 Números y ART", 
+                vehiculos: "🚗 Vehículos y VTV",
+                tareas: "📝 Gestión de Tareas",
+                facturas: "📄 Gestión de Facturas",
+                retenciones: "💳 Control de Retenciones"
+            };
+            document.getElementById('page-title').innerText = titles[tab];
+            
+            if(tab === 'dashboard') renderDashboard();
+            if(tab === 'operarios') renderOperarios();
+            if(tab === 'clientes') renderClientes();
+            if(tab === 'personal') renderPersonal();
+            if(tab === 'proveedores') renderProveedores();
+            if(tab === 'numeros') renderNumeros();
             if(tab === 'vehiculos') renderVehiculos();
+            if(tab === 'tareas') renderTareas();
+            if(tab === 'facturas') renderFacturas();
+            if(tab === 'retenciones') {
+                actualizarSelectFacturasRetencion();
+                renderRetenciones();
+            }
+            applyUserPermissions();
         }
 
         function renderDashboard() {
-            document.getElementById('kpi-operarios').innerText = db.operarios.length;
-            document.getElementById('kpi-clientes').innerText = db.clientes.length;
-            document.getElementById('kpi-vehiculos').innerText = db.vehiculos.length;
-            document.getElementById('kpi-facturas').innerText = db.facturas.filter(f => f.estado === 'Pendiente').length;
-            renderVehiculos();
-        }
+            let activos = db.operarios.filter(o => !o.egreso || o.egreso.trim() === "").length;
+            let inactivos = db.operarios.length - activos;
+            let clientesActivos = db.clientes.filter(c => !c.estado || c.estado === 'Activo').length;
+            let clientesInactivos = db.clientes.length - clientesActivos;
 
-        function renderVehiculos() {
-            const tbody = document.getElementById('table-vehiculos-body'); tbody.innerHTML = '';
+            const tareasPend = db.tareas.filter(t => t.estado === 'Pendiente').length;
+            document.getElementById('kpi-tareas-pendientes').innerText = tareasPend;
+
+            let listContainer = document.getElementById('dashboard-antiguedad-list');
+            listContainer.innerHTML = '';
+            db.operarios.forEach(o => {
+                let ant = calcularAntiguedadDetalle(o.ingreso);
+                listContainer.innerHTML += `
+                    <div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl text-xs">
+                        <span class="font-medium text-slate-800">${o.nombre}</span>
+                        <span class="px-2.5 py-1 bg-blue-50 ecolux-text font-bold rounded-lg">${ant.texto}</span>
+                    </div>`;
+            });
+
+            document.getElementById('kpi-operarios').innerText = db.operarios.length;
+            document.getElementById('kpi-activos').innerText = activos;
+            document.getElementById('kpi-inactivos').innerText = inactivos;
+            document.getElementById('kpi-clientes').innerText = db.clientes.length;
+            document.getElementById('kpi-clientes-activos').innerText = clientesActivos;
+            document.getElementById('kpi-clientes-inactivos').innerText = clientesInactivos;
+
+            const hoyStr = new Date().toISOString().split('T')[0];
+            const manianaDate = new Date();
+            manianaDate.setDate(manianaDate.getDate() + 1);
+            const manianaStr = manianaDate.toISOString().split('T')[0];
+            const tareasFiltradas = db.tareas.filter(t => t.fecha === hoyStr || t.fecha === manianaStr);
+            const taskTbody = document.getElementById('dashboard-tasks-table');
+            taskTbody.innerHTML = '';
+            if(tareasFiltradas.length === 0) {
+                taskTbody.innerHTML = `<tr><td colspan="3" class="px-6 py-4 text-center text-slate-400">No hay tareas programadas para hoy ni para mañana.</td></tr>`;
+            } else {
+                tareasFiltradas.forEach(t => {
+                    const badgeTag = t.fecha === hoyStr ? '<span class="bg-blue-100 ecolux-text text-xs px-2 py-0.5 rounded font-semibold ml-2">Hoy</span>' : '<span class="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-semibold ml-2">Mañana</span>';
+                    const estadoBadge = t.estado === 'Hecha' ? '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">Hecha</span>' : '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">Pendiente</span>';
+                    taskTbody.innerHTML += `
+                        <tr class="hover:bg-slate-50 cursor-pointer transition" onclick="showModalDetalleFinanciero('tarea', ${t.id})">
+                            <td class="px-6 py-3 font-medium text-slate-700">${t.fecha} ${badgeTag}</td>
+                            <td class="px-6 py-3 text-slate-600">${t.detalle}</td>
+                            <td class="px-6 py-3">${estadoBadge}</td>
+                        </tr>`;
+                });
+            }
+
+            const vtvContainer = document.getElementById('vtv-alerts-container');
+            vtvContainer.innerHTML = '';
+            const hoy = new Date();
             db.vehiculos.forEach(v => {
-                let actions = currentUserRole === 'invitados' ? '' : `<td class="p-4 text-center action-col"><button onclick="openModalEdit('vehiculos', ${v.id})" class="text-blue-500 p-2"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="deleteItem('vehiculos', ${v.id})" class="text-red-500 p-2"><i class="fa-solid fa-trash"></i></button></td>`;
-                tbody.innerHTML += `<tr class="hover:bg-slate-50"><td class="p-4 font-semibold">${v.vehiculo}</td><td class="p-4">${v.patente}</td><td class="p-4">${v.chasis}</td><td class="p-4">${v.motor}</td><td class="p-4">${v.seguro}</td><td class="p-4">${v.vtoVtv}</td>${actions}</tr>`;
+                if(!v.vtoVtv) return;
+                const vtvDate = new Date(v.vtoVtv);
+                const diffDays = Math.ceil((vtvDate - hoy) / (1000 * 60 * 60 * 24));
+                let badgeColor = "bg-emerald-50 text-emerald-700 border-emerald-200";
+                let statusText = `Vence en ${diffDays} días`;
+                if(diffDays < 0) {
+                    badgeColor = "bg-red-50 text-red-700 border-red-200";
+                    statusText = "¡VTV VENCIDA!";
+                } else if(diffDays <= 30) {
+                    badgeColor = "bg-amber-50 text-amber-700 border-amber-200";
+                    statusText = `¡Próxima a vencer (${diffDays} días)!`;
+                }
+                vtvContainer.innerHTML += `
+                    <div class="p-3 border rounded-xl flex flex-col justify-between ${badgeColor}">
+                        <div class="font-bold text-xs">${v.vehiculo} (${v.patente})</div>
+                        <div class="text-[11px] font-semibold mt-1">VTV: ${v.vtoVtv} - ${statusText}</div>
+                    </div>`;
+            });
+
+            const cats = {};
+            db.operarios.forEach(o => {
+                let catNormalizada = normalizarCategoria(o.categoria);
+                cats[catNormalizada] = (cats[catNormalizada] || 0) + 1;
+            });
+
+            const ctx = document.getElementById('chartCategorias').getContext('2d');
+            if(chartInstance) chartInstance.destroy();
+            chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: { 
+                    labels: Object.keys(cats), 
+                    datasets: [{ 
+                        data: Object.values(cats), 
+                        backgroundColor: ['#005b7f', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'] 
+                    }] 
+                },
+                options: { responsive: true, maintainAspectRatio: false }
             });
         }
 
-        function openModalAdd(type) { currentEditingType = type; currentEditingId = null; buildFormFields(type, {}); openModal('modal-form'); }
-        function openModalEdit(type, id) { currentEditingType = type; currentEditingId = id; let item = db[type].find(i => i.id === id); buildFormFields(type, item || {}); openModal('modal-form'); }
+        // --- TABLAS EMPRESARIALES ---
+        function renderOperarios(filter = '') {
+            const tbody = document.getElementById('table-operarios-body');
+            tbody.innerHTML = '';
+            db.operarios.forEach((op, idx) => {
+                if(!op.nombre.toLowerCase().includes(filter.toLowerCase()) && !String(op.leg).includes(filter)) return;
+                let isActive = !op.egreso || op.egreso.trim() === "";
+                let badge = isActive ? '<span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-semibold">Activo</span>' : '<span class="px-2.5 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold">Inactivo</span>';
+                let ant = calcularAntiguedadDetalle(op.ingreso);
+                let catMostrada = normalizarCategoria(op.categoria);
+                
+                let actionsTd = currentUserRole === 'invitados' ? '' : `
+                    <td class="p-4 text-center action-col">
+                        <button onclick="event.stopPropagation(); openModalEdit('operarios', ${idx})" class="text-blue-500 p-2"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="event.stopPropagation(); deleteItem('operarios', ${idx})" class="text-red-500 p-2"><i class="fa-solid fa-trash"></i></button>
+                    </td>`;
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition cursor-pointer" onclick="showDetail('operario', ${idx})">
+                        <td class="p-4 font-semibold ecolux-text">#${op.leg}</td>
+                        <td class="p-4 font-medium">${op.nombre}</td>
+                        <td class="p-4 font-semibold text-slate-600">${ant.texto}</td>
+                        <td class="p-4">${badge}</td>
+                        <td class="p-4"><span class="px-2.5 py-1 bg-cyan-50 ecolux-text rounded-lg text-xs font-semibold">${catMostrada}</span></td>
+                        ${actionsTd}
+                    </tr>`;
+            });
+        }
+
+        function renderClientes(filter = '') {
+            const tbody = document.getElementById('table-clientes-body');
+            tbody.innerHTML = '';
+            db.clientes.forEach((cli, idx) => {
+                if(!cli.nombre.toLowerCase().includes(filter.toLowerCase())) return;
+                let isCliActive = !cli.estado || cli.estado === 'Activo';
+                let badge = isCliActive ? '<span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-semibold">Activo</span>' : '<span class="px-2.5 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold">Inactivo</span>';
+                
+                let actionsTd = currentUserRole === 'invitados' ? '' : `
+                    <td class="p-4 text-center action-col">
+                        <button onclick="event.stopPropagation(); openModalEdit('clientes', ${idx})" class="text-blue-500 p-2"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="event.stopPropagation(); deleteItem('clientes', ${idx})" class="text-red-500 p-2"><i class="fa-solid fa-trash"></i></button>
+                    </td>`;
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition cursor-pointer" onclick="showDetail('cliente', ${idx})">
+                        <td class="p-4 font-semibold text-slate-800">${cli.nombre}</td>
+                        <td class="p-4 text-slate-600">${cli.direccion}</td>
+                        <td class="p-4">${badge}</td>
+                        ${actionsTd}
+                    </tr>`;
+            });
+        }
+
+        function renderPersonal(filter = '') {
+            const tbody = document.getElementById('table-personal-body');
+            tbody.innerHTML = '';
+            db.personal.forEach((per, idx) => {
+                if(!per.nombre.toLowerCase().includes(filter.toLowerCase())) return;
+                let actionsTd = currentUserRole === 'invitados' ? '' : `
+                    <td class="p-4 text-center action-col">
+                        <button onclick="event.stopPropagation(); openModalEdit('personal', ${idx})" class="text-blue-500 p-2"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="event.stopPropagation(); deleteItem('personal', ${idx})" class="text-red-500 p-2"><i class="fa-solid fa-trash"></i></button>
+                    </td>`;
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition cursor-pointer" onclick="showDetail('personal', ${idx})">
+                        <td class="p-4 font-medium">${per.nombre}</td>
+                        <td class="p-4">${per.celular}</td>
+                        ${actionsTd}
+                    </tr>`;
+            });
+        }
+
+        function renderProveedores(filter = '') {
+            const tbody = document.getElementById('table-proveedores-body');
+            tbody.innerHTML = '';
+            db.proveedores.forEach((prov, idx) => {
+                if(!prov.nombre.toLowerCase().includes(filter.toLowerCase())) return;
+                let actionsTd = currentUserRole === 'invitados' ? '' : `
+                    <td class="p-4 text-center action-col">
+                        <button onclick="event.stopPropagation(); openModalEdit('proveedores', ${idx})" class="text-blue-500 p-2"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="event.stopPropagation(); deleteItem('proveedores', ${idx})" class="text-red-500 p-2"><i class="fa-solid fa-trash"></i></button>
+                    </td>`;
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition cursor-pointer" onclick="showDetail('proveedor', ${idx})">
+                        <td class="p-4 font-medium ecolux-text">${prov.nombre}</td>
+                        ${actionsTd}
+                    </tr>`;
+            });
+        }
+
+        function renderNumeros(filter = '') {
+            const tbody = document.getElementById('table-numeros-body');
+            tbody.innerHTML = '';
+            db.numeros.forEach((num, idx) => {
+                if(!num.concepto.toLowerCase().includes(filter.toLowerCase())) return;
+                let actionsTd = currentUserRole === 'invitados' ? '' : `
+                    <td class="p-4 text-center action-col">
+                        <button onclick="event.stopPropagation(); openModalEdit('numeros', ${idx})" class="text-blue-500 p-2"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="event.stopPropagation(); deleteItem('numeros', ${idx})" class="text-red-500 p-2"><i class="fa-solid fa-trash"></i></button>
+                    </td>`;
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition cursor-pointer" onclick="showDetail('numero', ${idx})">
+                        <td class="p-4 font-medium">${num.concepto}</td>
+                        ${actionsTd}
+                    </tr>`;
+            });
+        }
+
+        function renderVehiculos(filter = '') {
+            const tbody = document.getElementById('table-vehiculos-body');
+            tbody.innerHTML = '';
+            db.vehiculos.forEach((veh, idx) => {
+                if(!veh.vehiculo.toLowerCase().includes(filter.toLowerCase()) && !veh.patente.toLowerCase().includes(filter.toLowerCase())) return;
+                let actionsTd = currentUserRole === 'invitados' ? '' : `
+                    <td class="p-4 text-center action-col">
+                        <button onclick="event.stopPropagation(); openModalEdit('vehiculos', ${idx})" class="text-blue-500 p-2"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="event.stopPropagation(); deleteItem('vehiculos', ${idx})" class="text-red-500 p-2"><i class="fa-solid fa-trash"></i></button>
+                    </td>`;
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 transition cursor-pointer" onclick="showDetail('vehiculo', ${idx})">
+                        <td class="p-4 font-medium">${veh.vehiculo}</td>
+                        <td class="p-4 font-semibold">${veh.patente}</td>
+                        <td class="p-4"><span class="px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg text-xs font-bold">${veh.vtoVtv || 'S/D'}</span></td>
+                        ${actionsTd}
+                    </tr>`;
+            });
+        }
+
+        // --- TAREAS, FACTURAS Y RETENCIONES ---
+        function handleTareaSubmit(e) {
+            e.preventDefault();
+            if(currentUserRole === 'invitados') return;
+            const nueva = {
+                id: Date.now(),
+                fecha: document.getElementById('tarea-fecha').value,
+                detalle: document.getElementById('tarea-detalle').value,
+                estado: 'Pendiente'
+            };
+            db.tareas.push(nueva);
+            persistData();
+            e.target.reset();
+            renderTareas();
+        }
+
+        function renderTareas() {
+            const filtro = document.getElementById('buscador-tareas').value.toLowerCase();
+            const tbody = document.getElementById('tabla-tareas-body');
+            tbody.innerHTML = '';
+            const filtradas = db.tareas.filter(t => t.detalle.toLowerCase().includes(filtro));
+            if(filtradas.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="px-6 py-4 text-center text-slate-400">No se encontraron tareas.</td></tr>`;
+                return;
+            }
+            filtradas.forEach(t => {
+                let estadoCell = currentUserRole === 'invitados' ? 
+                    `<span class="px-2.5 py-1 rounded-full text-xs font-semibold ${t.estado === 'Hecha' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${t.estado}</span>` :
+                    `<select onchange="cambiarEstadoItem('tareas', ${t.id}, this.value)" class="text-xs font-semibold px-2.5 py-1 rounded-full border border-slate-200 ${t.estado === 'Hecha' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
+                        <option value="Pendiente" ${t.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
+                        <option value="Hecha" ${t.estado === 'Hecha' ? 'selected' : ''}>Hecha</option>
+                    </select>`;
+
+                let actionsTd = currentUserRole === 'invitados' ? '' : `
+                    <td class="px-6 py-3 text-right action-col">
+                        <button onclick="eliminarFinanciero('tareas', ${t.id})" class="text-slate-400 hover:text-rose-600 p-1 rounded"><i class="fa-solid fa-trash"></i></button>
+                    </td>`;
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 cursor-pointer transition" onclick="if(event.target.tagName!=='SELECT' && event.target.tagName!=='BUTTON') showModalDetalleFinanciero('tarea', ${t.id})">
+                        <td class="px-6 py-3 font-medium text-slate-700">${t.fecha}</td>
+                        <td class="px-6 py-3 text-slate-600">${t.detalle}</td>
+                        <td class="px-6 py-3">${estadoCell}</td>
+                        ${actionsTd}
+                    </tr>`;
+            });
+        }
+
+        function handleFacturaSubmit(e) {
+            e.preventDefault();
+            if(currentUserRole === 'invitados') return;
+            const nueva = {
+                id: Date.now(),
+                numero: document.getElementById('factura-numero').value,
+                vencimiento: document.getElementById('factura-vencimiento').value,
+                razon: document.getElementById('factura-razon').value,
+                monto: Number(document.getElementById('factura-monto').value),
+                estado: 'Pendiente'
+            };
+            db.facturas.push(nueva);
+            persistData();
+            e.target.reset();
+            renderFacturas();
+        }
+
+        function setFiltroFacturas(estado) {
+            filtroFacturasActual = estado;
+            ['todas', 'pendientes', 'abonadas'].forEach(e => {
+                const btn = document.getElementById(`btn-factura-${e}`);
+                if(btn) btn.className = "px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-800 transition";
+            });
+            const activeBtn = document.getElementById(`btn-factura-${estado.toLowerCase() === 'todas' ? 'todas' : estado.toLowerCase() === 'pendiente' ? 'pendientes' : 'abonadas'}`);
+            if(activeBtn) activeBtn.className = "px-3 py-1.5 rounded-lg bg-white text-slate-800 shadow-sm transition font-semibold";
+            renderFacturas();
+        }
+
+        function renderFacturas() {
+            const totalPendiente = db.facturas.filter(f => f.estado === 'Pendiente').reduce((acc, f) => acc + Number(f.monto), 0);
+            const kpiEl = document.getElementById('kpi-facturas-pendiente-monto');
+            if(kpiEl) kpiEl.innerText = `$${totalPendiente.toLocaleString('es-AR', { minimumFractionDigits: 2 })}`;
+
+            const textoBusqueda = document.getElementById('buscador-facturas').value.toLowerCase();
+            const tbody = document.getElementById('tabla-facturas-body');
+            tbody.innerHTML = '';
+            let filtradas = db.facturas.filter(f => {
+                const coincideTexto = f.numero.toLowerCase().includes(textoBusqueda) || f.razon.toLowerCase().includes(textoBusqueda);
+                const coincideEstado = filtroFacturasActual === 'Todas' || f.estado === filtroFacturasActual;
+                return coincideTexto && coincideEstado;
+            });
+            if(filtradas.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-4 text-center text-slate-400">No se encontraron facturas.</td></tr>`;
+                return;
+            }
+            filtradas.forEach(f => {
+                let estadoCell = currentUserRole === 'invitados' ?
+                    `<span class="px-2.5 py-1 rounded-full text-xs font-semibold ${f.estado === 'Abonada' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${f.estado}</span>` :
+                    `<select onchange="cambiarEstadoItem('facturas', ${f.id}, this.value)" class="text-xs font-semibold px-2.5 py-1 rounded-full border border-slate-200 ${f.estado === 'Abonada' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">
+                        <option value="Pendiente" ${f.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
+                        <option value="Abonada" ${f.estado === 'Abonada' ? 'selected' : ''}>Abonada</option>
+                    </select>`;
+
+                let actionsTd = currentUserRole === 'invitados' ? '' : `
+                    <td class="px-6 py-3 text-right action-col">
+                        <button onclick="eliminarFinanciero('facturas', ${f.id})" class="text-slate-400 hover:text-rose-600 p-1 rounded"><i class="fa-solid fa-trash"></i></button>
+                    </td>`;
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 cursor-pointer transition" onclick="if(event.target.tagName!=='SELECT' && event.target.tagName!=='BUTTON') showModalDetalleFinanciero('factura', ${f.id})">
+                        <td class="px-6 py-3 font-semibold text-slate-800">${f.numero}</td>
+                        <td class="px-6 py-3 text-slate-600">${f.vencimiento}</td>
+                        <td class="px-6 py-3 text-slate-600">${f.razon}</td>
+                        <td class="px-6 py-3 font-medium text-slate-700">$${f.monto.toLocaleString('es-AR', { minimumFractionDigits: 2 })}</td>
+                        <td class="px-6 py-3">${estadoCell}</td>
+                        ${actionsTd}
+                    </tr>`;
+            });
+        }
+
+        function actualizarSelectFacturasRetencion() {
+            const select = document.getElementById('retencion-factura-select');
+            if(!select) return;
+            select.innerHTML = '<option value="">-- Seleccione factura --</option>';
+            db.facturas.forEach(f => {
+                select.innerHTML += `<option value="${f.id}">${f.numero} - ${f.razon} ($${f.monto})</option>`;
+            });
+        }
+
+        function onSelectFacturaRetencion() {
+            const id = document.getElementById('retencion-factura-select').value;
+            const razonInput = document.getElementById('retencion-razon');
+            if(!id) { razonInput.value = ''; return; }
+            const factura = db.facturas.find(f => f.id == id);
+            if(factura) razonInput.value = factura.razon;
+        }
+
+        function handleRetencionSubmit(e) {
+            e.preventDefault();
+            if(currentUserRole === 'invitados') return;
+            const facturaId = Number(document.getElementById('retencion-factura-select').value);
+            const factura = db.facturas.find(f => f.id === facturaId);
+            if(!factura) return;
+            const abonado = Number(document.getElementById('retencion-abonado').value);
+            const nueva = {
+                id: Date.now(),
+                facturaId: factura.id,
+                numero: factura.numero,
+                razon: factura.razon,
+                montoTotal: factura.monto,
+                abonado: abonado,
+                estado: document.getElementById('retencion-estado').value
+            };
+            db.retenciones.push(nueva);
+            persistData();
+            e.target.reset();
+            document.getElementById('retencion-razon').value = '';
+            renderRetenciones();
+        }
+
+        function setFiltroRetenciones(estado) {
+            filtroRetencionesActual = estado;
+            ['todas', 'pendientes', 'abonadas'].forEach(e => {
+                const btn = document.getElementById(`btn-retencion-${e}`);
+                if(btn) btn.className = "px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-800 transition";
+            });
+            const activeBtn = document.getElementById(`btn-retencion-${estado.toLowerCase() === 'todas' ? 'todas' : estado.toLowerCase() === 'pendiente' ? 'pendientes' : 'abonadas'}`);
+            if(activeBtn) activeBtn.className = "px-3 py-1.5 rounded-lg bg-white text-slate-800 shadow-sm transition font-semibold";
+            renderRetenciones();
+        }
+
+        function renderRetenciones() {
+            const totalRetPendientes = db.retenciones
+                .filter(r => r.estado === 'Pendiente')
+                .reduce((acc, r) => acc + (Number(r.montoTotal) - Number(r.abonado)), 0);
+            
+            const kpiRetEl = document.getElementById('kpi-retenciones-pendiente-monto');
+            if(kpiRetEl) kpiRetEl.innerText = `$${totalRetPendientes.toLocaleString('es-AR', { minimumFractionDigits: 2 })}`;
+
+            const filtroTexto = document.getElementById('buscador-retenciones').value.toLowerCase();
+            const tbody = document.getElementById('tabla-retenciones-body');
+            tbody.innerHTML = '';
+            const filtradas = db.retenciones.filter(r => {
+                const coincideTexto = r.numero.toLowerCase().includes(filtroTexto) || r.razon.toLowerCase().includes(filtroTexto);
+                const coincideEstado = filtroRetencionesActual === 'Todas' || r.estado === filtroRetencionesActual;
+                return coincideTexto && coincideEstado;
+            });
+            if(filtradas.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="px-6 py-4 text-center text-slate-400">No se encontraron retenciones.</td></tr>`;
+                return;
+            }
+            filtradas.forEach(r => {
+                const retencionCalculada = Number(r.montoTotal) - Number(r.abonado);
+                let estadoCell = currentUserRole === 'invitados' ?
+                    `<span class="px-2.5 py-1 rounded-full text-xs font-semibold ${r.estado === 'Abonada' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${r.estado}</span>` :
+                    `<select onchange="cambiarEstadoItem('retenciones', ${r.id}, this.value)" class="text-xs font-semibold px-2.5 py-1 rounded-full border border-slate-200 ${r.estado === 'Abonada' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">
+                        <option value="Pendiente" ${r.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option>
+                        <option value="Abonada" ${r.estado === 'Abonada' ? 'selected' : ''}>Abonada</option>
+                    </select>`;
+
+                let actionsTd = currentUserRole === 'invitados' ? '' : `
+                    <td class="px-6 py-3 text-right action-col">
+                        <button onclick="eliminarFinanciero('retenciones', ${r.id})" class="text-slate-400 hover:text-rose-600 p-1 rounded"><i class="fa-solid fa-trash"></i></button>
+                    </td>`;
+
+                tbody.innerHTML += `
+                    <tr class="hover:bg-slate-50 cursor-pointer transition" onclick="if(event.target.tagName!=='SELECT' && event.target.tagName!=='BUTTON') showModalDetalleFinanciero('retencion', ${r.id})">
+                        <td class="px-6 py-3 font-semibold text-slate-800">${r.numero}</td>
+                        <td class="px-6 py-3 text-slate-600">${r.razon}</td>
+                        <td class="px-6 py-3 text-slate-600">$${Number(r.montoTotal).toLocaleString('es-AR', { minimumFractionDigits: 2 })}</td>
+                        <td class="px-6 py-3 text-slate-600">$${Number(r.abonado).toLocaleString('es-AR', { minimumFractionDigits: 2 })}</td>
+                        <td class="px-6 py-3 font-semibold text-indigo-600">$${retencionCalculada.toLocaleString('es-AR', { minimumFractionDigits: 2 })}</td>
+                        <td class="px-6 py-3">${estadoCell}</td>
+                        ${actionsTd}
+                    </tr>`;
+            });
+        }
+
+        function cambiarEstadoItem(tipo, id, nuevoEstado) {
+            if(currentUserRole === 'invitados') return;
+            const item = db[tipo].find(i => i.id === id);
+            if(item) {
+                item.estado = nuevoEstado;
+                persistData();
+                if(tipo === 'tareas') renderTareas();
+                if(tipo === 'facturas') {
+                    renderFacturas();
+                    renderRetenciones();
+                }
+                if(tipo === 'retenciones') renderRetenciones();
+            }
+        }
+
+        function eliminarFinanciero(tipo, id) {
+            if(currentUserRole === 'invitados') return;
+            db[tipo] = db[tipo].filter(i => i.id !== id);
+            if(tipo === 'facturas') db.retenciones = db.retenciones.filter(r => r.facturaId !== id);
+            persistData();
+            if(tipo === 'tareas') renderTareas();
+            if(tipo === 'facturas') {
+                renderFacturas();
+                renderRetenciones();
+            }
+            if(tipo === 'retenciones') renderRetenciones();
+        }
+
+        function showModalDetalleFinanciero(tipo, id) {
+            let title = "", html = "";
+            if(tipo === 'tarea') {
+                const t = db.tareas.find(i => i.id === id);
+                if(!t) return;
+                title = 'Detalle de Tarea';
+                html = `<div><strong class="text-slate-500 block text-xs">FECHA</strong><span class="text-slate-800 font-medium">${t.fecha}</span></div>
+                        <div><strong class="text-slate-500 block text-xs">DETALLE</strong><p class="text-slate-800 bg-slate-50 p-3 rounded-xl border border-slate-200 mt-1">${t.detalle}</p></div>
+                        <div><strong class="text-slate-500 block text-xs">ESTADO</strong><span class="font-bold">${t.estado}</span></div>`;
+            } else if(tipo === 'factura') {
+                const f = db.facturas.find(i => i.id === id);
+                if(!f) return;
+                title = 'Detalle de Factura';
+                html = `<div><strong class="text-slate-500 block text-xs">NÚMERO</strong><span class="font-bold text-base">${f.numero}</span></div>
+                        <div><strong class="text-slate-500 block text-xs">RAZÓN SOCIAL</strong><span>${f.razon}</span></div>
+                        <div><strong class="text-slate-500 block text-xs">VENCIMIENTO</strong><span>${f.vencimiento}</span></div>
+                        <div><strong class="text-slate-500 block text-xs">MONTO TOTAL</strong><span class="font-bold text-lg">$${f.monto.toLocaleString('es-AR', { minimumFractionDigits: 2 })}</span></div>`;
+            } else if(tipo === 'retencion') {
+                const r = db.retenciones.find(i => i.id === id);
+                if(!r) return;
+                const retCalculada = Number(r.montoTotal) - Number(r.abonado);
+                title = 'Detalle de Retención';
+                html = `<div><strong class="text-slate-500 block text-xs">NÚMERO DE FACTURA</strong><span class="font-bold text-base">${r.numero}</span></div>
+                        <div><strong class="text-slate-500 block text-xs">RAZÓN SOCIAL</strong><span>${r.razon}</span></div>
+                        <div class="grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-xl border">
+                            <div><span class="text-xs text-slate-500 block">Total Factura</span><span class="font-bold">$${Number(r.montoTotal).toLocaleString('es-AR')}</span></div>
+                            <div><span class="text-xs text-slate-500 block">Abonado</span><span class="font-bold">$${Number(r.abonado).toLocaleString('es-AR')}</span></div>
+                        </div>
+                        <div><strong class="text-slate-500 block text-xs">RETENCIÓN CALCULADA</strong><span class="text-indigo-600 font-bold text-lg">$${retCalculada.toLocaleString('es-AR')}</span></div>`;
+            }
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-body').innerHTML = html;
+            openModal('modal-detail');
+        }
+
+        function showDetail(type, idx) {
+            let title = "", html = "";
+            if(type === 'operario') {
+                let op = db.operarios[idx];
+                let isActive = !op.egreso || op.egreso.trim() === "";
+                title = "Ficha del Operario";
+                html = `<p><strong>Nombre y Apellido:</strong> ${op.nombre}</p><p><strong>Legajo:</strong> ${op.leg}</p><p><strong>CUIL:</strong> ${op.cuil}</p><p><strong>Antigüedad:</strong> ${calcularAntiguedadDetalle(op.ingreso).texto}</p><p><strong>Estado:</strong> ${isActive ? 'Activo' : 'Inactivo'}</p><p><strong>Domicilio y Tel.:</strong> ${op.domicilio}</p><p><strong>Ingreso:</strong> ${op.ingreso}</p><p><strong>Egreso:</strong> ${op.egreso || 'Activo'}</p><p><strong>Categoría:</strong> ${normalizarCategoria(op.categoria)}</p>`;
+            } else if(type === 'cliente') {
+                let cli = db.clientes[idx];
+                let isCliActive = !cli.estado || cli.estado === 'Activo';
+                title = "Información del Cliente";
+                html = `<p><strong>Razón Social:</strong> ${cli.nombre}</p><p><strong>Estado:</strong> ${isCliActive ? 'Activo' : 'Inactivo'}</p><p><strong>CUIT:</strong> ${cli.facturacion}</p><p><strong>Mail:</strong> ${cli.mail}</p><p><strong>Dirección:</strong> ${cli.direccion}</p>`;
+            } else if(type === 'personal') {
+                let p = db.personal[idx];
+                title = "Personal Oficial";
+                html = `<p><strong>Nombre:</strong> ${p.nombre}</p><p><strong>Celular:</strong> ${p.celular}</p><p><strong>Modelo:</strong> ${p.modelo}</p><p><strong>CUIL:</strong> ${p.cuil}</p>`;
+            } else if(type === 'proveedor') {
+                let p = db.proveedores[idx];
+                title = "Proveedor";
+                html = `<p><strong>Nombre:</strong> ${p.nombre}</p><p><strong>Detalle:</strong> ${p.detalle}</p>`;
+            } else if(type === 'numero') {
+                let n = db.numeros[idx];
+                title = "Concepto / ART";
+                html = `<p><strong>Concepto:</strong> ${n.concepto}</p><p><strong>Número:</strong> ${n.numero}</p>`;
+            } else if(type === 'vehiculo') {
+                let v = db.vehiculos[idx];
+                title = "Vehículo";
+                html = `<p><strong>Vehículo:</strong> ${v.vehiculo}</p><p><strong>Patente:</strong> ${v.patente}</p><p><strong>Dueño:</strong> ${v.dueno}</p><p><strong>Chasis:</strong> ${v.chasis}</p><p><strong>Motor:</strong> ${v.motor}</p><p><strong>Seguro:</strong> ${v.seguro}</p><p><strong>VTV:</strong> ${v.vtoVtv}</p>`;
+            }
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-body').innerHTML = html;
+            openModal('modal-detail');
+        }
+
+        function openModalAdd(type) { 
+            if(currentUserRole === 'invitados') return;
+            currentEditingType = type; currentEditingIdx = null; document.getElementById('form-title').innerText = "Agregar"; buildFormFields(type, {}); openModal('modal-form'); 
+        }
+        function openModalEdit(type, idx) { 
+            if(currentUserRole === 'invitados') return;
+            currentEditingType = type; currentEditingIdx = idx; document.getElementById('form-title').innerText = "Modificar"; buildFormFields(type, db[type][idx]); openModal('modal-form'); 
+        }
 
         function buildFormFields(type, data) {
-            let container = document.getElementById('form-fields'); container.innerHTML = '';
-            if(type === 'vehiculos') {
+            let container = document.getElementById('form-fields');
+            container.innerHTML = '';
+            if(type === 'operarios') {
                 container.innerHTML = `
-                    <input type="text" placeholder="Vehículo (Ej. Partner)" id="f-vehiculo" value="${data.vehiculo || ''}" required class="w-full p-2 border rounded-xl text-sm">
-                    <input type="text" placeholder="Patente" id="f-patente" value="${data.patente || ''}" required class="w-full p-2 border rounded-xl text-sm">
-                    <input type="text" placeholder="Chasis" id="f-chasis" value="${data.chasis || ''}" required class="w-full p-2 border rounded-xl text-sm">
-                    <input type="text" placeholder="Motor" id="f-motor" value="${data.motor || ''}" required class="w-full p-2 border rounded-xl text-sm">
-                    <input type="text" placeholder="Seguro" id="f-seguro" value="${data.seguro || ''}" required class="w-full p-2 border rounded-xl text-sm">
-                    <div><label class="text-xs text-slate-500">Fecha de Vto. VTV</label><input type="date" id="f-vtv" value="${data.vtoVtv || ''}" required class="w-full p-2 border rounded-xl text-sm"></div>`;
+                    <input type="number" placeholder="Legajo" id="f-leg" value="${data.leg || ''}" required class="w-full p-2.5 border rounded-xl text-sm">
+                    <input type="text" placeholder="Apellido y Nombre" id="f-nombre" value="${data.nombre || ''}" required class="w-full p-2.5 border rounded-xl text-sm">
+                    <input type="text" placeholder="CUIL" id="f-cuil" value="${data.cuil || ''}" required class="w-full p-2.5 border rounded-xl text-sm">
+                    <input type="text" placeholder="Categoría" id="f-categoria" value="${data.categoria || ''}" required class="w-full p-2.5 border rounded-xl text-sm">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div><label class="text-xs">Ingreso</label><input type="date" id="f-ingreso" value="${data.ingreso || ''}" required class="w-full p-2 border rounded-xl text-sm"></div>
+                        <div><label class="text-xs">Egreso</label><input type="date" id="f-egreso" value="${data.egreso || ''}" class="w-full p-2 border rounded-xl text-sm"></div>
+                    </div>
+                    <input type="text" placeholder="Domicilio y Teléfono" id="f-domicilio" value="${data.domicilio || ''}" required class="w-full p-2.5 border rounded-xl text-sm">`;
+            } else if(type === 'clientes') {
+                let estadoActual = data.estado || 'Activo';
+                container.innerHTML = `
+                    <input type="text" placeholder="Razón Social" id="f-nombre" value="${data.nombre || ''}" required class="w-full p-2.5 border rounded-xl text-sm">
+                    <input type="text" placeholder="Dirección" id="f-direccion" value="${data.direccion || ''}" required class="w-full p-2.5 border rounded-xl text-sm">
+                    <input type="text" placeholder="Mail" id="f-mail" value="${data.mail || ''}" required class="w-full p-2.5 border rounded-xl text-sm">
+                    <input type="text" placeholder="CUIT" id="f-facturacion" value="${data.facturacion || ''}" required class="w-full p-2.5 border rounded-xl text-sm">
+                    <div>
+                        <label class="text-xs font-semibold text-slate-600">Estado del Cliente</label>
+                        <select id="f-estado" class="w-full p-2.5 border rounded-xl text-sm mt-1">
+                            <option value="Activo" ${estadoActual === 'Activo' ? 'selected' : ''}>Activo</option>
+                            <option value="Inactivo" ${estadoActual === 'Inactivo' ? 'selected' : ''}>Inactivo</option>
+                        </select>
+                    </div>`;
+            } else if(type === 'personal') {
+                container.innerHTML = `<input type="text" placeholder="Nombre" id="f-nombre" value="${data.nombre || ''}" required class="w-full p-2.5 border rounded-xl text-sm"><input type="text" placeholder="Celular" id="f-celular" value="${data.celular || ''}" required class="w-full p-2.5 border rounded-xl text-sm"><input type="text" placeholder="Modelo" id="f-modelo" value="${data.modelo || ''}" required class="w-full p-2.5 border rounded-xl text-sm"><input type="text" placeholder="CUIL" id="f-cuil" value="${data.cuil || ''}" required class="w-full p-2.5 border rounded-xl text-sm">`;
+            } else if(type === 'proveedores') {
+                container.innerHTML = `<input type="text" placeholder="Proveedor" id="f-nombre" value="${data.nombre || ''}" required class="w-full p-2.5 border rounded-xl text-sm"><input type="text" placeholder="Detalle" id="f-detalle" value="${data.detalle || ''}" required class="w-full p-2.5 border rounded-xl text-sm">`;
+            } else if(type === 'numeros') {
+                container.innerHTML = `<input type="text" placeholder="Concepto" id="f-concepto" value="${data.concepto || ''}" required class="w-full p-2.5 border rounded-xl text-sm"><input type="text" placeholder="Número" id="f-numero" value="${data.numero || ''}" required class="w-full p-2.5 border rounded-xl text-sm">`;
+            } else if(type === 'vehiculos') {
+                container.innerHTML = `<input type="text" placeholder="Vehículo" id="f-vehiculo" value="${data.vehiculo || ''}" required class="w-full p-2.5 border rounded-xl text-sm"><input type="text" placeholder="Patente" id="f-patente" value="${data.patente || ''}" required class="w-full p-2.5 border rounded-xl text-sm"><input type="text" placeholder="Dueño" id="f-dueno" value="${data.dueno || ''}" required class="w-full p-2.5 border rounded-xl text-sm"><input type="text" placeholder="Chasis" id="f-chasis" value="${data.chasis || ''}" required class="w-full p-2.5 border rounded-xl text-sm"><input type="text" placeholder="Motor" id="f-motor" value="${data.motor || ''}" required class="w-full p-2.5 border rounded-xl text-sm"><input type="text" placeholder="Seguro" id="f-seguro" value="${data.seguro || ''}" required class="w-full p-2.5 border rounded-xl text-sm"><input type="date" placeholder="VTV" id="f-vtv" value="${data.vtoVtv || ''}" required class="w-full p-2 border rounded-xl text-sm">`;
             }
         }
 
-        async function handleFormSubmit(e) {
+        function handleFormSubmit(e) {
             e.preventDefault();
-            let obj = {
-                vehiculo: document.getElementById('f-vehiculo').value,
-                patente: document.getElementById('f-patente').value,
-                chasis: document.getElementById('f-chasis').value,
-                motor: document.getElementById('f-motor').value,
-                seguro: document.getElementById('f-seguro').value,
-                vtoVtv: document.getElementById('f-vtv').value
-            };
-            let url = `/api/${currentEditingType}`;
-            let method = currentEditingId ? 'PUT' : 'POST';
-            if(currentEditingId) url += `/${currentEditingId}`;
+            if(currentUserRole === 'invitados') return;
+            let obj = {};
+            if(currentEditingType === 'operarios') {
+                obj = { leg: Number(document.getElementById('f-leg').value), nombre: document.getElementById('f-nombre').value, cuil: document.getElementById('f-cuil').value, categoria: document.getElementById('f-categoria').value, ingreso: document.getElementById('f-ingreso').value, egreso: document.getElementById('f-egreso').value, domicilio: document.getElementById('f-domicilio').value };
+            } else if(currentEditingType === 'clientes') {
+                obj = { nombre: document.getElementById('f-nombre').value, direccion: document.getElementById('f-direccion').value, mail: document.getElementById('f-mail').value, facturacion: document.getElementById('f-facturacion').value, estado: document.getElementById('f-estado').value };
+            } else if(currentEditingType === 'personal') {
+                obj = { nombre: document.getElementById('f-nombre').value, celular: document.getElementById('f-celular').value, modelo: document.getElementById('f-modelo').value, cuil: document.getElementById('f-cuil').value };
+            } else if(currentEditingType === 'proveedores') {
+                obj = { nombre: document.getElementById('f-nombre').value, detalle: document.getElementById('f-detalle').value };
+            } else if(currentEditingType === 'numeros') {
+                obj = { concepto: document.getElementById('f-concepto').value, numero: document.getElementById('f-numero').value };
+            } else if(currentEditingType === 'vehiculos') {
+                obj = { vehiculo: document.getElementById('f-vehiculo').value, patente: document.getElementById('f-patente').value, dueno: document.getElementById('f-dueno').value, chasis: document.getElementById('f-chasis').value, motor: document.getElementById('f-motor').value, seguro: document.getElementById('f-seguro').value, vtoVtv: document.getElementById('f-vtv').value };
+            }
 
-            await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(obj) });
-            closeModal('modal-form'); fetchData();
+            if(currentEditingIdx !== null) db[currentEditingType][currentEditingIdx] = obj;
+            else db[currentEditingType].push(obj);
+
+            persistData();
+            closeModal('modal-form');
         }
 
-        async function deleteItem(type, id) {
+        function deleteItem(type, idx) {
+            if(currentUserRole === 'invitados') return;
             if(confirm("¿Seguro de eliminar?")) {
-                await fetch(`/api/${type}/${id}`, { method: 'DELETE' });
-                fetchData();
+                db[type].splice(idx, 1);
+                persistData();
             }
+        }
+
+        function refreshCurrentView() {
+            renderOperarios(document.getElementById('searchOperario').value);
+            renderClientes(document.getElementById('searchCliente').value);
+            renderPersonal(document.getElementById('searchPersonal').value);
+            renderProveedores(document.getElementById('searchProveedor').value);
+            renderNumeros(document.getElementById('searchNumero').value);
+            renderVehiculos(document.getElementById('searchVehiculo').value);
+            renderTareas();
+            renderFacturas();
+            renderRetenciones();
         }
 
         function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
-        function logout() { localStorage.clear(); location.reload(); }
+
+        document.getElementById('searchOperario').addEventListener('input', e => renderOperarios(e.target.value));
+        document.getElementById('searchCliente').addEventListener('input', e => renderClientes(e.target.value));
+        document.getElementById('searchPersonal').addEventListener('input', e => renderPersonal(e.target.value));
+        document.getElementById('searchProveedor').addEventListener('input', e => renderProveedores(e.target.value));
+        document.getElementById('searchNumero').addEventListener('input', e => renderNumeros(e.target.value));
+        document.getElementById('searchVehiculo').addEventListener('input', e => renderVehiculos(e.target.value));
+
+        // Lector completo de Excel
+        document.getElementById('excelFile').addEventListener('change', function(e) {
+            if(currentUserRole === 'invitados') return;
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const workbook = XLSX.read(new Uint8Array(e.target.result), {type: 'array'});
+                if(workbook.Sheets[' Empleados']) {
+                    db.operarios = XLSX.utils.sheet_to_json(workbook.Sheets[' Empleados']).filter(r => r['Leg.']).map(r => ({
+                        leg: r['Leg.'],
+                        nombre: r['Apellido y Nombre'] || '',
+                        cuil: String(r['CUIL'] || ''),
+                        domicilio: r['Teléfono y dirección'] || '',
+                        ingreso: parseExcelDate(r['Fecha']),
+                        egreso: parseExcelDate(r['Fecha ']),
+                        categoria: r['Categoría'] || 'General'
+                    }));
+                }
+                if(workbook.Sheets['Clientes']) {
+                    db.clientes = XLSX.utils.sheet_to_json(workbook.Sheets['Clientes']).filter(r => r['Clientes']).map(r => ({
+                        nombre: r['Clientes'] || '',
+                        direccion: r['Direccion '] || '',
+                        mail: r['Mail'] || '',
+                        facturacion: r['Datos facturacion'] || '',
+                        estado: 'Activo'
+                    }));
+                }
+                if(workbook.Sheets['Personal Oficial']) {
+                    db.personal = XLSX.utils.sheet_to_json(workbook.Sheets['Personal Oficial']).filter(r => r['Apellido y Nombre']).map(r => ({
+                        nombre: r['Apellido y Nombre'] || '',
+                        celular: String(r['Celular Ecolux'] || ''),
+                        modelo: r['Modelo'] || '',
+                        cuil: String(r['CUIL'] || '')
+                    }));
+                }
+                if(workbook.Sheets['Proveedores']) {
+                    db.proveedores = XLSX.utils.sheet_to_json(workbook.Sheets['Proveedores']).filter(r => r['Proveedores']).map(r => ({
+                        nombre: r['Proveedores'] || '',
+                        detalle: r['Detalle'] || ''
+                    }));
+                }
+                if(workbook.Sheets['Numeros'] || workbook.Sheets['Números']) {
+                    let sheet = workbook.Sheets['Numeros'] || workbook.Sheets['Números'];
+                    db.numeros = XLSX.utils.sheet_to_json(sheet).map(r => ({
+                        concepto: r['Concepto'] || Object.values(r)[0] || '',
+                        numero: r['Numero'] || r['Número'] || Object.values(r)[1] || ''
+                    }));
+                }
+                if(workbook.Sheets['Vehiculos'] || workbook.Sheets['Vehículos']) {
+                    let sheet = workbook.Sheets['Vehiculos'] || workbook.Sheets['Vehículos'];
+                    db.vehiculos = XLSX.utils.sheet_to_json(sheet).map(r => ({
+                        vehiculo: r['Vehículo'] || r['Vehiculo'] || '',
+                        patente: r['Patente'] || '',
+                        dueno: r['Dueño'] || r['Dueno'] || '',
+                        chasis: String(r['Chasis'] || ''),
+                        motor: String(r['Motor'] || ''),
+                        seguro: r['Seguro'] || '',
+                        vtoVtv: parseExcelDate(r['Vto. VTV'] || r['VTV'] || '')
+                    }));
+                }
+                persistData();
+                alert("¡Todas las solapas del Excel de Ecolux se importaron y guardaron con éxito!");
+            };
+            reader.readAsArrayBuffer(file);
+        });
     </script>
 </body>
 </html>
