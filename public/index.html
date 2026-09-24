@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecolux - Sistema de Gestión Integral</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- SheetJS para lectura de Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- Chart.js para Gráficos -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .ecolux-primary { background-color: #005b7f; }
+        .ecolux-primary-hover:hover { background-color: #004763; }
+        .ecolux-text { color: #005b7f; }
+    </style>
+</head>
+<body class="bg-slate-100 font-sans text-slate-800">
+
+    <!-- PANTALLA DE LOGIN -->
+    <div id="login-screen" class="fixed inset-0 bg-slate-900 flex items-center justify-center z-50 p-4">
+        <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl p-8 space-y-6">
+            <div class="text-center space-y-3 flex flex-col items-center">
+                <div class="flex items-center gap-1 font-black text-2xl tracking-tighter select-none py-1">
+                    <span class="ecolux-text">ecol</span><span class="text-amber-400 font-bold px-0.5"><i class="fa-solid fa-sun text-xl"></i></span><span class="ecolux-text">lux</span>
+                </div>
+                <p class="text-[11px] ecolux-text font-bold uppercase tracking-widest -mt-2">Excelencia en Limpieza</p>
+                <p class="text-xs text-slate-500 pt-1">Av. Dorrego 2646, CABA</p>
+            </div>
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Usuario</label>
+                    <input type="text" id="login-user" placeholder="Usuario" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-[#005b7f]">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Contraseña</label>
+                    <input type="password" id="login-pass" placeholder="••••••••" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-[#005b7f]">
+                </div>
+                <button type="submit" class="w-full py-3.5 ecolux-primary ecolux-primary-hover text-white font-bold rounded-xl shadow-lg transition text-sm">Iniciar Sesión</button>
+            </form>
+            <div class="p-3 bg-slate-50 rounded-xl text-center text-xs text-slate-500">
+                🔐 Acceso autorizado para personal y colaboradores de Ecolux.
+            </div>
+        </div>
+    </div>
+
+    <!-- APLICACIÓN PRINCIPAL -->
+    <div id="app-container" class="flex h-screen overflow-hidden hidden">
+        <aside class="w-72 bg-slate-900 text-white flex flex-col shadow-xl">
+            <div class="p-6 border-b border-slate-800 flex flex-col gap-1">
+                <div class="flex items-center gap-3">
+                    <div class="bg-white/10 p-2.5 rounded-xl flex items-center justify-center shadow-md">
+                        <span class="font-black text-lg tracking-tighter"><span class="text-cyan-400">eco</span><span class="text-amber-400 text-xs px-0.5"><i class="fa-solid fa-sun"></i></span><span class="text-cyan-400">lux</span></span>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-black tracking-wider text-white">ECOLUX</h2>
+                        <p class="text-[9px] text-cyan-400 font-semibold uppercase tracking-widest">Excelencia en Limpieza</p>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="flex-1 p-4 space-y-1.5 overflow-y-auto">
+                <button onclick="switchTab('dashboard')" id="btn-dashboard" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition ecolux-primary text-white font-medium shadow-md"><i class="fa-solid fa-chart-pie w-5"></i> Dashboard</button>
+                <button onclick="switchTab('operarios')" id="btn-operarios" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-800 text-slate-300"><i class="fa-solid fa-users w-5"></i> Operarios</button>
+                <button onclick="switchTab('clientes')" id="btn-clientes" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-800 text-slate-300"><i class="fa-solid fa-building w-5"></i> Clientes</button>
+                <button onclick="switchTab('personal')" id="btn-personal" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-800 text-slate-300"><i class="fa-solid fa-id-badge w-5"></i> Pers. Oficial</button>
+                <button onclick="switchTab('proveedores')" id="btn-proveedores" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-800 text-slate-300"><i class="fa-solid fa-truck-fast w-5"></i> Proveedores</button>
+                <button onclick="switchTab('numeros')" id="btn-numeros" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-800 text-slate-300"><i class="fa-solid fa-address-book w-5"></i> Números y ART</button>
+                <button onclick="switchTab('vehiculos')" id="btn-vehiculos" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-800 text-slate-300"><i class="fa-solid fa-car w-5"></i> Vehículos</button>
+                <button onclick="switchTab('tareas')" id="btn-tareas" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-800 text-slate-300"><i class="fa-solid fa-list-check w-5"></i> Tareas</button>
+                <button onclick="switchTab('facturas')" id="btn-facturas" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-800 text-slate-300"><i class="fa-solid fa-file-invoice-dollar w-5"></i> Facturas</button>
+                <button onclick="switchTab('retenciones')" id="btn-retenciones" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-800 text-slate-300"><i class="fa-solid fa-percent w-5"></i> Retenciones</button>
+            </nav>
+            <div class="p-4 border-t border-slate-800 bg-slate-950 space-y-3">
+                <div class="flex items-center justify-between text-xs text-slate-400">
+                    <span>Usuario: <strong id="current-user-display" class="text-emerald-400">ecolux</strong></span>
+                    <button onclick="logout()" class="text-red-400 hover:text-red-300 font-semibold underline">Salir</button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col overflow-y-auto">
+            <header class="bg-white shadow-sm h-16 flex items-center justify-between px-8 border-b border-slate-200">
+                <h1 id="page-title" class="text-xl font-bold text-slate-800">📊 Dashboard Interactivo</h1>
+                <div class="flex items-center gap-4">
+                    <span class="text-xs text-slate-500 font-medium">Av. Dorrego 2646, CABA | 4777-9336</span>
+                    <span id="role-badge" class="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-semibold">🟢 Modo Edición</span>
+                </div>
+            </header>
+
+            <div class="p-8 space-y-6">
+                <!-- DASHBOARD -->
+                <div id="view-dashboard" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200"><p class="text-xs font-medium text-slate-500 uppercase">Total Operarios</p><h3 id="kpi-operarios" class="text-2xl font-bold text-slate-800 mt-1">0</h3></div>
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200"><p class="text-xs font-medium text-emerald-600 uppercase">Activos (Op.)</p><h3 id="kpi-activos" class="text-2xl font-bold text-emerald-600 mt-1">0</h3></div>
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200"><p class="text-xs font-medium text-red-600 uppercase">Inactivos (Op.)</p><h3 id="kpi-inactivos" class="text-2xl font-bold text-red-600 mt-1">0</h3></div>
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200"><p class="text-xs font-medium text-slate-500 uppercase">Total Clientes</p><h3 id="kpi-clientes" class="text-2xl font-bold text-slate-800 mt-1">0</h3></div>
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200"><p class="text-xs font-medium text-emerald-600 uppercase">Clientes Activos</p><h3 id="kpi-clientes-activos" class="text-2xl font-bold text-emerald-600 mt-1">0</h3></div>
+                        <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200"><p class="text-xs font-medium text-red-600 uppercase">Clientes Inactivos</p><h3 id="kpi-clientes-inactivos" class="text-2xl font-bold text-red-600 mt-1">0</h3></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col">
+                            <h3 class="font-bold text-slate-700 mb-3"><i class="fa-solid fa-clock ecolux-text mr-2"></i> Antigüedad del Personal</h3>
+                            <div class="flex-1 overflow-y-auto max-h-60 space-y-2 pr-2" id="dashboard-antiguedad-list"></div>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                            <h3 class="font-bold text-slate-700 mb-4">Operarios por Categoría</h3>
+                            <div class="h-52 flex items-center justify-center"><canvas id="chartCategorias"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- OPERARIOS -->
+                <div id="view-operarios" class="hidden space-y-6">
+                    <div class="flex justify-between items-center gap-4">
+                        <input type="text" id="searchOperario" placeholder="Buscar operario..." class="flex-1 p-3 bg-white border border-slate-200 rounded-xl text-sm shadow-sm">
+                        <button id="btn-add-operarios" onclick="openModalAdd('operarios')" class="ecolux-primary ecolux-primary-hover text-white font-medium px-5 py-3 rounded-xl shadow-md transition flex items-center gap-2"><i class="fa-solid fa-user-plus"></i> Agregar</button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead><tr class="bg-slate-50 border-b text-xs font-semibold text-slate-500 uppercase"><th class="p-4">Legajo</th><th class="p-4">Apellido y Nombre</th><th class="p-4">Antigüedad</th><th class="p-4">Estado</th><th class="p-4">Categoría</th><th class="p-4 text-center action-col">Acciones</th></tr></thead>
+                            <tbody id="table-operarios-body" class="divide-y text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- CLIENTES -->
+                <div id="view-clientes" class="hidden space-y-6">
+                    <div class="flex justify-between items-center gap-4">
+                        <input type="text" id="searchCliente" placeholder="Buscar cliente..." class="flex-1 p-3 bg-white border border-slate-200 rounded-xl text-sm shadow-sm">
+                        <button id="btn-add-clientes" onclick="openModalAdd('clientes')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-5 py-3 rounded-xl shadow-md transition flex items-center gap-2"><i class="fa-solid fa-building-user"></i> Agregar</button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead><tr class="bg-slate-50 border-b text-xs font-semibold text-slate-500 uppercase"><th class="p-4">Razón Social</th><th class="p-4">Dirección</th><th class="p-4">Estado</th><th class="p-4 text-center action-col">Acciones</th></tr></thead>
+                            <tbody id="table-clientes-body" class="divide-y text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- PERSONAL OFICIAL -->
+                <div id="view-personal" class="hidden space-y-6">
+                    <div class="flex justify-between items-center gap-4">
+                        <input type="text" id="searchPersonal" placeholder="Buscar personal..." class="flex-1 p-3 bg-white border border-slate-200 rounded-xl text-sm shadow-sm">
+                        <button id="btn-add-personal" onclick="openModalAdd('personal')" class="ecolux-primary ecolux-primary-hover text-white font-medium px-5 py-3 rounded-xl shadow-md transition flex items-center gap-2"><i class="fa-solid fa-user-plus"></i> Agregar</button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead><tr class="bg-slate-50 border-b text-xs font-semibold text-slate-500 uppercase"><th class="p-4">Apellido y Nombre</th><th class="p-4">Celular Ecolux</th><th class="p-4 text-center action-col">Acciones</th></tr></thead>
+                            <tbody id="table-personal-body" class="divide-y text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- PROVEEDORES -->
+                <div id="view-proveedores" class="hidden space-y-6">
+                    <div class="flex justify-between items-center gap-4">
+                        <input type="text" id="searchProveedor" placeholder="Buscar proveedor..." class="flex-1 p-3 bg-white border border-slate-200 rounded-xl text-sm shadow-sm">
+                        <button id="btn-add-proveedores" onclick="openModalAdd('proveedores')" class="ecolux-primary ecolux-primary-hover text-white font-medium px-5 py-3 rounded-xl shadow-md transition flex items-center gap-2"><i class="fa-solid fa-truck"></i> Agregar</button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead><tr class="bg-slate-50 border-b text-xs font-semibold text-slate-500 uppercase"><th class="p-4">Proveedor</th><th class="p-4 text-center action-col">Acciones</th></tr></thead>
+                            <tbody id="table-proveedores-body" class="divide-y text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- NÚMEROS Y ART -->
+                <div id="view-numeros" class="hidden space-y-6">
+                    <div class="flex justify-between items-center gap-4">
+                        <input type="text" id="searchNumero" placeholder="Buscar concepto..." class="flex-1 p-3 bg-white border border-slate-200 rounded-xl text-sm shadow-sm">
+                        <button id="btn-add-numeros" onclick="openModalAdd('numeros')" class="ecolux-primary ecolux-primary-hover text-white font-medium px-5 py-3 rounded-xl shadow-md transition flex items-center gap-2"><i class="fa-solid fa-plus"></i> Agregar</button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead><tr class="bg-slate-50 border-b text-xs font-semibold text-slate-500 uppercase"><th class="p-4">Concepto</th><th class="p-4 text-center action-col">Acciones</th></tr></thead>
+                            <tbody id="table-numeros-body" class="divide-y text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- VEHÍCULOS -->
+                <div id="view-vehiculos" class="hidden space-y-6">
+                    <div class="flex justify-between items-center gap-4">
+                        <input type="text" id="searchVehiculo" placeholder="Buscar vehículo..." class="flex-1 p-3 bg-white border border-slate-200 rounded-xl text-sm shadow-sm">
+                        <button id="btn-add-vehiculos" onclick="openModalAdd('vehiculos')" class="ecolux-primary ecolux-primary-hover text-white font-medium px-5 py-3 rounded-xl shadow-md transition flex items-center gap-2"><i class="fa-solid fa-car"></i> Agregar</button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead><tr class="bg-slate-50 border-b text-xs font-semibold text-slate-500 uppercase"><th class="p-4">Vehículo</th><th class="p-4">Patente</th><th class="p-4">Vencimiento VTV</th><th class="p-4 text-center action-col">Acciones</th></tr></thead>
+                            <tbody id="table-vehiculos-body" class="divide-y text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TAREAS -->
+                <div id="view-tareas" class="hidden space-y-6">
+                    <div id="form-tarea-container" class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                        <h3 class="font-semibold text-slate-800 mb-3 text-sm">Nueva Tarea</h3>
+                        <form onsubmit="handleTareaSubmit(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                            <div><label class="block text-xs font-medium text-slate-600 mb-1">Fecha</label><input type="date" id="tarea-fecha" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm"></div>
+                            <div class="md:col-span-2"><label class="block text-xs font-medium text-slate-600 mb-1">Detalle</label><input type="text" id="tarea-detalle" placeholder="Detalle de tarea..." required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm"></div>
+                            <div><button type="submit" class="w-full ecolux-primary text-white font-medium py-2 px-4 rounded-xl text-sm">Agregar</button></div>
+                        </form>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead><tr class="bg-slate-50 text-slate-500 text-xs uppercase border-b"><th class="px-6 py-3">Fecha</th><th class="px-6 py-3">Detalle</th><th class="px-6 py-3">Estado</th><th class="px-6 py-3 text-right action-col">Acciones</th></tr></thead>
+                            <tbody id="tabla-tareas-body" class="divide-y text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- FACTURAS -->
+                <div id="view-facturas" class="hidden space-y-6">
+                    <div id="form-factura-container" class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                        <h3 class="font-semibold text-slate-800 mb-3 text-sm">Registrar Factura</h3>
+                        <form onsubmit="handleFacturaSubmit(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+                            <div><input type="text" id="factura-numero" placeholder="Nº Factura" required class="w-full rounded-xl border px-3 py-2 text-sm"></div>
+                            <div><input type="date" id="factura-vencimiento" required class="w-full rounded-xl border px-3 py-2 text-sm"></div>
+                            <div><input type="text" id="factura-razon" placeholder="Razón Social" required class="w-full rounded-xl border px-3 py-2 text-sm"></div>
+                            <div><input type="number" step="0.01" id="factura-monto" placeholder="Monto Total" required class="w-full rounded-xl border px-3 py-2 text-sm"></div>
+                            <div><button type="submit" class="w-full ecolux-primary text-white font-medium py-2 px-4 rounded-xl text-sm">Guardar</button></div>
+                        </form>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead><tr class="bg-slate-50 text-slate-500 text-xs uppercase border-b"><th class="px-6 py-3">Nº Factura</th><th class="px-6 py-3">Vencimiento</th><th class="px-6 py-3">Razón Social</th><th class="px-6 py-3">Monto</th><th class="px-6 py-3">Estado</th><th class="px-6 py-3 text-right action-col">Acciones</th></tr></thead>
+                            <tbody id="tabla-facturas-body" class="divide-y text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- RETENCIONES -->
+                <div id="view-retenciones" class="hidden space-y-6">
+                    <div id="form-retencion-container" class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
+                        <h3 class="font-semibold text-slate-800 mb-3 text-sm">Registrar Retención</h3>
+                        <form onsubmit="handleRetencionSubmit(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+                            <div><select id="retencion-factura-select" onchange="onSelectFacturaRetencion()" required class="w-full rounded-xl border px-3 py-2 text-sm bg-white"><option value="">-- Factura --</option></select></div>
+                            <div><input type="text" id="retencion-razon" readonly placeholder="Razón Social" class="w-full rounded-xl border bg-slate-100 px-3 py-2 text-sm"></div>
+                            <div><input type="number" step="0.01" id="retencion-abonado" placeholder="Importe Abonado" required class="w-full rounded-xl border px-3 py-2 text-sm"></div>
+                            <div><select id="retencion-estado" class="w-full rounded-xl border px-3 py-2 text-sm bg-white"><option value="Pendiente">Pendiente</option><option value="Abonada">Abonada</option></select></div>
+                            <div><button type="submit" class="w-full ecolux-primary text-white font-medium py-2 px-4 rounded-xl text-sm">Guardar</button></div>
+                        </form>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead><tr class="bg-slate-50 text-slate-500 text-xs uppercase border-b"><th class="px-6 py-3">Nº Factura</th><th class="px-6 py-3">Razón Social</th><th class="px-6 py-3">Total</th><th class="px-6 py-3">Abonado</th><th class="px-6 py-3">Retención</th><th class="px-6 py-3">Estado</th><th class="px-6 py-3 text-right action-col">Acciones</th></tr></thead>
+                            <tbody id="tabla-retenciones-body" class="divide-y text-sm"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODALES -->
+    <div id="modal-form" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-white w-full max-w-xl rounded-2xl shadow-2xl overflow-hidden p-6">
+            <h3 id="form-title" class="font-bold text-lg mb-4 text-slate-800">Formulario</h3>
+            <form onsubmit="handleFormSubmit(event)" class="space-y-3">
+                <div id="form-fields" class="space-y-3"></div>
+                <div class="flex justify-end gap-2 pt-3 border-t">
+                    <button type="button" onclick="closeModal('modal-form')" class="px-4 py-2 bg-slate-200 rounded-xl text-sm">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 ecolux-primary text-white rounded-xl text-sm">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let db = { operarios: [], clientes: [], personal: [], proveedores: [], numeros: [], vehiculos: [], tareas: [], facturas: [], retenciones: [] };
+        let isLoggedIn = localStorage.getItem('ecolux_logged') === 'true';
+        let currentUserRole = localStorage.getItem('ecolux_user_role') || 'ecolux';
+        let chartInstance = null;
+        let currentEditingType = null;
+        let currentEditingId = null;
+
+        async function fetchDataFromAPI() {
+            try {
+                for(let key of Object.keys(db)) {
+                    let res = await fetch(`/api/${key}`);
+                    db[key] = await res.json();
+                }
+                renderDashboard();
+                refreshCurrentView();
+            } catch(e) { console.error("Error sincronizando API:", e); }
+        }
+
+        if(isLoggedIn) {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('hidden');
+            applyUserPermissions();
+            fetchDataFromAPI();
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const user = document.getElementById('login-user').value.trim().toLowerCase();
+            const pass = document.getElementById('login-pass').value.trim();
+            
+            if(user === 'ecolux' && pass === 'Dorrego2646*') {
+                currentUserRole = 'ecolux';
+            } else if(user === 'invitados' && pass === 'Ecolux2646*') {
+                currentUserRole = 'invitados';
+            } else {
+                alert("Datos incorrectos. Por favor, vuelva a ingresar los datos.");
+                document.getElementById('login-pass').value = '';
+                document.getElementById('login-user').focus();
+                return;
+            }
+
+            isLoggedIn = true;
+            localStorage.setItem('ecolux_logged', 'true');
+            localStorage.setItem('ecolux_user_role', currentUserRole);
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('app-container').classList.remove('hidden');
+            applyUserPermissions();
+            fetchDataFromAPI();
+        }
+
+        function applyUserPermissions() {
+            const roleDisplay = document.getElementById('current-user-display');
+            const roleBadge = document.getElementById('role-badge');
+            if(currentUserRole === 'invitados') {
+                if(roleDisplay) { roleDisplay.innerText = 'invitados'; roleDisplay.className = "text-amber-400"; }
+                if(roleBadge) { roleBadge.innerText = '👁️ Modo Lectura'; roleBadge.className = "px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-semibold"; }
+                ['btn-add-operarios', 'btn-add-clientes', 'btn-add-personal', 'btn-add-proveedores', 'btn-add-numeros', 'btn-add-vehiculos', 'form-tarea-container', 'form-factura-container', 'form-retencion-container'].forEach(id => {
+                    const el = document.getElementById(id); if(el) el.style.display = 'none';
+                });
+                document.querySelectorAll('.action-col').forEach(col => col.style.display = 'none');
+            } else {
+                if(roleDisplay) { roleDisplay.innerText = 'ecolux'; roleDisplay.className = "text-emerald-400"; }
+                if(roleBadge) { roleBadge.innerText = '🟢 Modo Edición'; roleBadge.className = "px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-semibold"; }
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('ecolux_logged');
+            localStorage.removeItem('ecolux_user_role');
+            location.reload();
+        }
+
+        function switchTab(tab) {
+            ['dashboard', 'operarios', 'clientes', 'personal', 'proveedores', 'numeros', 'vehiculos', 'tareas', 'facturas', 'retenciones'].forEach(t => {
+                document.getElementById(`view-${t}`).classList.add('hidden');
+                document.getElementById(`btn-${t}`).className = "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition hover:bg-slate-800 text-slate-300";
+            });
+            document.getElementById(`view-${tab}`).classList.remove('hidden');
+            document.getElementById(`btn-${tab}`).className = "w-full flex items-center gap-3 px-4 py-3 rounded-xl transition ecolux-primary text-white font-medium shadow-md";
+            if(tab === 'dashboard') renderDashboard();
+            if(tab === 'retenciones') actualizarSelectFacturasRetencion();
+            applyUserPermissions();
+        }
+
+        function renderDashboard() {
+            let activos = db.operarios.filter(o => !o.egreso || o.egreso.trim() === "").length;
+            let inactivos = db.operarios.length - activos;
+            let cliActivos = db.clientes.filter(c => !c.estado || c.estado === 'Activo').length;
+            let cliInactivos = db.clientes.length - cliActivos;
+
+            document.getElementById('kpi-operarios').innerText = db.operarios.length;
+            document.getElementById('kpi-activos').innerText = activos;
+            document.getElementById('kpi-inactivos').innerText = inactivos;
+            document.getElementById('kpi-clientes').innerText = db.clientes.length;
+            document.getElementById('kpi-clientes-activos').innerText = cliActivos;
+            document.getElementById('kpi-clientes-inactivos').innerText = cliInactivos;
+
+            let listContainer = document.getElementById('dashboard-antiguedad-list');
+            listContainer.innerHTML = '';
+            db.operarios.forEach(o => {
+                let ant = calcularAntiguedadDetalle(o.ingreso);
+                listContainer.innerHTML += `<div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl text-xs"><span class="font-medium text-slate-800">${o.nombre}</span><span class="px-2.5 py-1 bg-blue-50 ecolux-text font-bold rounded-lg">${ant.texto}</span></div>`;
+            });
+
+            const cats = {};
+            db.operarios.forEach(o => { cats[o.categoria || 'General'] = (cats[o.categoria || 'General'] || 0) + 1; });
+            const ctx = document.getElementById('chartCategorias').getContext('2d');
+            if(chartInstance) chartInstance.destroy();
+            chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: { labels: Object.keys(cats), datasets: [{ data: Object.values(cats), backgroundColor: ['#005b7f', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'] }] },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+            renderOperarios(); renderClientes(); renderPersonal(); renderProveedores(); renderNumeros(); renderVehiculos(); renderTareas(); renderFacturas(); renderRetenciones();
+        }
+
+        function calcularAntiguedadDetalle(fechaIngreso) {
+            if(!fechaIngreso) return { texto: "N/D" };
+            const ingreso = new Date(fechaIngreso);
+            const hoy = new Date();
+            let anos = hoy.getFullYear() - ingreso.getFullYear();
+            if(anos < 0) anos = 0;
+            return { texto: `${anos} ${anos === 1 ? 'año' : 'años'}` };
+        }
+
+        function renderOperarios() {
+            const tbody = document.getElementById('table-operarios-body'); tbody.innerHTML = '';
+            db.operarios.forEach(op => {
+                let isActive = !op.egreso || op.egreso.trim() === "";
+                let badge = isActive ? '<span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-semibold">Activo</span>' : '<span class="px-2.5 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold">Inactivo</span>';
+                let actions = currentUserRole === 'invitados' ? '' : `<td class="p-4 text-center action-col"><button onclick="openModalEdit('operarios', ${op.id})" class="text-blue-500 p-2"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="deleteItem('operarios', ${op.id})" class="text-red-500 p-2"><i class="fa-solid fa-trash"></i></button></td>`;
+                tbody.innerHTML += `<tr class="hover:bg-slate-50"><td class="p-4 font-semibold ecolux-text">#${op.leg}</td><td class="p-4">${op.nombre}</td><td class="p-4">${calcularAntiguedadDetalle(op.ingreso).texto}</td><td class="p-4">${badge}</td><td class="p-4">${op.categoria || 'General'}</td>${actions}</tr>`;
+            });
+        }
+
+        function renderClientes() {
+            const tbody = document.getElementById('table-clientes-body'); tbody.innerHTML = '';
+            db.clientes.forEach(cli => {
+                let badge = (!cli.estado || cli.estado === 'Activo') ? '<span class="px-2.5 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-semibold">Activo</span>' : '<span class="px-2.5 py-1 bg-red-100 text-red-700 rounded-full text-xs font-semibold">Inactivo</span>';
+                let actions = currentUserRole === 'invitados' ? '' : `<td class="p-4 text-center action-col"><button onclick="openModalEdit('clientes', ${cli.id})" class="text-blue-500 p-2"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="deleteItem('clientes', ${cli.id})" class="text-red-500 p-2"><i class="fa-solid fa-trash"></i></button></td>`;
+                tbody.innerHTML += `<tr class="hover:bg-slate-50"><td class="p-4 font-semibold">${cli.nombre}</td><td class="p-4">${cli.direccion || ''}</td><td class="p-4">${badge}</td>${actions}</tr>`;
+            });
+        }
+
+        function renderPersonal() {
+            const tbody = document.getElementById('table-personal-body'); tbody.innerHTML = '';
+            db.personal.forEach(p => {
+                let actions = currentUserRole === 'invitados' ? '' : `<td class="p-4 text-center action-col"><button onclick="openModalEdit('personal', ${p.id})" class="text-blue-500 p-2"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="deleteItem('personal', ${p.id})" class="text-red-500 p-2"><i class="fa-solid fa-trash"></i></button></td>`;
+                tbody.innerHTML += `<tr class="hover:bg-slate-50"><td class="p-4">${p.nombre}</td><td class="p-4">${p.celular || ''}</td>${actions}</tr>`;
+            });
+        }
+
+        function renderProveedores() {
+            const tbody = document.getElementById('table-proveedores-body'); tbody.innerHTML = '';
+            db.proveedores.forEach(p => {
+                let actions = currentUserRole === 'invitados' ? '' : `<td class="p-4 text-center action-col"><button onclick="openModalEdit('proveedores', ${p.id})" class="text-blue-500 p-2"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="deleteItem('proveedores', ${p.id})" class="text-red-500 p-2"><i class="fa-solid fa-trash"></i></button></td>`;
+                tbody.innerHTML += `<tr class="hover:bg-slate-50"><td class="p-4">${p.nombre}</td>${actions}</tr>`;
+            });
+        }
+
+        function renderNumeros() {
+            const tbody = document.getElementById('table-numeros-body'); tbody.innerHTML = '';
+            db.numeros.forEach(n => {
+                let actions = currentUserRole === 'invitados' ? '' : `<td class="p-4 text-center action-col"><button onclick="openModalEdit('numeros', ${n.id})" class="text-blue-500 p-2"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="deleteItem('numeros', ${n.id})" class="text-red-500 p-2"><i class="fa-solid fa-trash"></i></button></td>`;
+                tbody.innerHTML += `<tr class="hover:bg-slate-50"><td class="p-4">${n.concepto}</td>${actions}</tr>`;
+            });
+        }
+
+        function renderVehiculos() {
+            const tbody = document.getElementById('table-vehiculos-body'); tbody.innerHTML = '';
+            db.vehiculos.forEach(v => {
+                let actions = currentUserRole === 'invitados' ? '' : `<td class="p-4 text-center action-col"><button onclick="openModalEdit('vehiculos', ${v.id})" class="text-blue-500 p-2"><i class="fa-solid fa-pen-to-square"></i></button><button onclick="deleteItem('vehiculos', ${v.id})" class="text-red-500 p-2"><i class="fa-solid fa-trash"></i></button></td>`;
+                tbody.innerHTML += `<tr class="hover:bg-slate-50"><td class="p-4">${v.vehiculo}</td><td class="p-4 font-semibold">${v.patente}</td><td class="p-4">${v.vtoVtv || 'S/D'}</td>${actions}</tr>`;
+            });
+        }
+
+        async function handleTareaSubmit(e) {
+            e.preventDefault();
+            await fetch('/api/tareas', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ fecha: document.getElementById('tarea-fecha').value, detalle: document.getElementById('tarea-detalle').value, estado: 'Pendiente' }) });
+            e.target.reset(); fetchDataFromAPI();
+        }
+
+        function renderTareas() {
+            const tbody = document.getElementById('tabla-tareas-body'); tbody.innerHTML = '';
+            db.tareas.forEach(t => {
+                let actions = currentUserRole === 'invitados' ? '' : `<td class="px-6 py-3 text-right action-col"><button onclick="deleteItem('tareas', ${t.id})" class="text-slate-400 hover:text-rose-600"><i class="fa-solid fa-trash"></i></button></td>`;
+                tbody.innerHTML += `<tr class="hover:bg-slate-50"><td class="px-6 py-3">${t.fecha}</td><td class="px-6 py-3">${t.detalle}</td><td class="px-6 py-3">${t.estado}</td>${actions}</tr>`;
+            });
+        }
+
+        async function handleFacturaSubmit(e) {
+            e.preventDefault();
+            await fetch('/api/facturas', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ numero: document.getElementById('factura-numero').value, vencimiento: document.getElementById('factura-vencimiento').value, razon: document.getElementById('factura-razon').value, monto: Number(document.getElementById('factura-monto').value), estado: 'Pendiente' }) });
+            e.target.reset(); fetchDataFromAPI();
+        }
+
+        function renderFacturas() {
+            const tbody = document.getElementById('tabla-facturas-body'); tbody.innerHTML = '';
+            db.facturas.forEach(f => {
+                let actions = currentUserRole === 'invitados' ? '' : `<td class="px-6 py-3 text-right action-col"><button onclick="deleteItem('facturas', ${f.id})" class="text-slate-400 hover:text-rose-600"><i class="fa-solid fa-trash"></i></button></td>`;
+                tbody.innerHTML += `<tr class="hover:bg-slate-50"><td class="px-6 py-3 font-semibold">${f.numero}</td><td class="px-6 py-3">${f.vencimiento}</td><td class="px-6 py-3">${f.razon}</td><td class="px-6 py-3">$${f.monto}</td><td class="px-6 py-3">${f.estado}</td>${actions}</tr>`;
+            });
+        }
+
+        function actualizarSelectFacturasRetencion() {
+            const select = document.getElementById('retencion-factura-select'); if(!select) return;
+            select.innerHTML = '<option value="">-- Seleccione factura --</option>';
+            db.facturas.forEach(f => { select.innerHTML += `<option value="${f.id}">${f.numero} - ${f.razon} ($${f.monto})</option>`; });
+        }
+
+        function onSelectFacturaRetencion() {
+            const id = document.getElementById('retencion-factura-select').value;
+            const factura = db.facturas.find(f => f.id == id);
+            document.getElementById('retencion-razon').value = factura ? factura.razon : '';
+        }
+
+        async function handleRetencionSubmit(e) {
+            e.preventDefault();
+            const facturaId = Number(document.getElementById('retencion-factura-select').value);
+            const factura = db.facturas.find(f => f.id === facturaId);
+            if(!factura) return;
+            await fetch('/api/retenciones', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ facturaId, numero: factura.numero, razon: factura.razon, montoTotal: factura.monto, abonado: Number(document.getElementById('retencion-abonado').value), estado: document.getElementById('retencion-estado').value }) });
+            e.target.reset(); document.getElementById('retencion-razon').value = ''; fetchDataFromAPI();
+        }
+
+        function renderRetenciones() {
+            const tbody = document.getElementById('tabla-retenciones-body'); tbody.innerHTML = '';
+            db.retenciones.forEach(r => {
+                let retCalculada = Number(r.montoTotal) - Number(r.abonado);
+                let actions = currentUserRole === 'invitados' ? '' : `<td class="px-6 py-3 text-right action-col"><button onclick="deleteItem('retenciones', ${r.id})" class="text-slate-400 hover:text-rose-600"><i class="fa-solid fa-trash"></i></button></td>`;
+                tbody.innerHTML += `<tr class="hover:bg-slate-50"><td class="px-6 py-3 font-semibold">${r.numero}</td><td class="px-6 py-3">${r.razon}</td><td class="px-6 py-3">$${r.montoTotal}</td><td class="px-6 py-3">$${r.abonado}</td><td class="px-6 py-3 text-indigo-600 font-bold">$${retCalculada}</td><td class="px-6 py-3">${r.estado}</td>${actions}</tr>`;
+            });
+        }
+
+        function openModalAdd(type) {
+            if(currentUserRole === 'invitados') return;
+            currentEditingType = type; currentEditingId = null;
+            document.getElementById('form-title').innerText = "Agregar Registro";
+            buildFormFields(type, {}); openModal('modal-form');
+        }
+
+        function openModalEdit(type, id) {
+            if(currentUserRole === 'invitados') return;
+            currentEditingType = type; currentEditingId = id;
+            let item = db[type].find(i => i.id === id);
+            document.getElementById('form-title').innerText = "Modificar Registro";
+            buildFormFields(type, item || {}); openModal('modal-form');
+        }
+
+        function buildFormFields(type, data) {
+            let container = document.getElementById('form-fields'); container.innerHTML = '';
+            if(type === 'operarios') {
+                container.innerHTML = `<input type="number" placeholder="Legajo" id="f-leg" value="${data.leg || ''}" required class="w-full p-2 border rounded-xl text-sm"><input type="text" placeholder="Nombre" id="f-nombre" value="${data.nombre || ''}" required class="w-full p-2 border rounded-xl text-sm"><input type="text" placeholder="Categoría" id="f-categoria" value="${data.categoria || ''}" required class="w-full p-2 border rounded-xl text-sm"><input type="date" id="f-ingreso" value="${data.ingreso || ''}" required class="w-full p-2 border rounded-xl text-sm">`;
+            } else if(type === 'clientes') {
+                container.innerHTML = `<input type="text" placeholder="Razón Social" id="f-nombre" value="${data.nombre || ''}" required class="w-full p-2 border rounded-xl text-sm"><input type="text" placeholder="Dirección" id="f-direccion" value="${data.direccion || ''}" required class="w-full p-2 border rounded-xl text-sm">`;
+            } else if(type === 'personal') {
+                container.innerHTML = `<input type="text" placeholder="Nombre" id="f-nombre" value="${data.nombre || ''}" required class="w-full p-2 border rounded-xl text-sm"><input type="text" placeholder="Celular" id="f-celular" value="${data.celular || ''}" required class="w-full p-2 border rounded-xl text-sm">`;
+            } else if(type === 'proveedores') {
+                container.innerHTML = `<input type="text" placeholder="Nombre" id="f-nombre" value="${data.nombre || ''}" required class="w-full p-2 border rounded-xl text-sm">`;
+            } else if(type === 'numeros') {
+                container.innerHTML = `<input type="text" placeholder="Concepto" id="f-concepto" value="${data.concepto || ''}" required class="w-full p-2 border rounded-xl text-sm">`;
+            } else if(type === 'vehiculos') {
+                container.innerHTML = `<input type="text" placeholder="Vehículo" id="f-vehiculo" value="${data.vehiculo || ''}" required class="w-full p-2 border rounded-xl text-sm"><input type="text" placeholder="Patente" id="f-patente" value="${data.patente || ''}" required class="w-full p-2 border rounded-xl text-sm">`;
+            }
+        }
+
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            if(currentUserRole === 'invitados') return;
+            let obj = {};
+            if(currentEditingType === 'operarios') {
+                obj = { leg: Number(document.getElementById('f-leg').value), nombre: document.getElementById('f-nombre').value, categoria: document.getElementById('f-categoria').value, ingreso: document.getElementById('f-ingreso').value };
+            } else if(currentEditingType === 'clientes') {
+                obj = { nombre: document.getElementById('f-nombre').value, direccion: document.getElementById('f-direccion').value };
+            } else if(currentEditingType === 'personal') {
+                obj = { nombre: document.getElementById('f-nombre').value, celular: document.getElementById('f-celular').value };
+            } else if(currentEditingType === 'proveedores') {
+                obj = { nombre: document.getElementById('f-nombre').value };
+            } else if(currentEditingType === 'numeros') {
+                obj = { concepto: document.getElementById('f-concepto').value };
+            } else if(currentEditingType === 'vehiculos') {
+                obj = { vehiculo: document.getElementById('f-vehiculo').value, patente: document.getElementById('f-patente').value };
+            }
+
+            let url = `/api/${currentEditingType}`;
+            let method = 'POST';
+            if(currentEditingId) { url += `/${currentEditingId}`; method = 'PUT'; }
+
+            await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(obj) });
+            closeModal('modal-form'); fetchDataFromAPI();
+        }
+
+        async function deleteItem(type, id) {
+            if(currentUserRole === 'invitados') return;
+            if(confirm("¿Seguro de eliminar este registro?")) {
+                await fetch(`/api/${type}/${id}`, { method: 'DELETE' });
+                fetchDataFromAPI();
+            }
+        }
+
+        function refreshCurrentView() {}
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); document.getElementById(id).classList.add('flex'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); document.getElementById(id).classList.remove('flex'); }
+    </script>
+</body>
+</html>
