@@ -13,9 +13,10 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .ecolux-primary { background-color: #005b7f; }
-        .ecolux-primary-hover:hover { background-color: #004763; }
-        .ecolux-text { color: #005b7f; }
+        .ecolux-primary { background-color: #0077b6; }
+        .ecolux-primary-hover:hover { background-color: #02639a; }
+        .ecolux-text { color: #0077b6; }
+        .ecolux-border { border-color: #0077b6; }
     </style>
 </head>
 <body class="bg-slate-100 font-sans text-slate-800">
@@ -34,11 +35,11 @@
             <form onsubmit="handleLogin(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Usuario</label>
-                    <input type="text" id="login-user" placeholder="Usuario" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-[#005b7f]">
+                    <input type="text" id="login-user" placeholder="Usuario" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-[#0077b6]">
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Contraseña</label>
-                    <input type="password" id="login-pass" placeholder="••••••••" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-[#005b7f]">
+                    <input type="password" id="login-pass" placeholder="••••••••" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-[#0077b6]">
                 </div>
                 <button type="submit" class="w-full py-3.5 ecolux-primary ecolux-primary-hover text-white font-bold rounded-xl shadow-lg transition text-sm">Iniciar Sesión</button>
             </form>
@@ -55,11 +56,11 @@
                 <div class="flex items-center gap-3">
                     <!-- Logo Oficial Sidebar -->
                     <div class="bg-white/10 p-2.5 rounded-xl flex items-center justify-center shadow-md">
-                        <span class="font-black text-lg tracking-tighter"><span class="text-cyan-400">eco</span><span class="text-amber-400 text-xs px-0.5"><i class="fa-solid fa-sun"></i></span><span class="text-cyan-400">lux</span></span>
+                        <span class="font-black text-lg tracking-tighter"><span class="text-sky-400">eco</span><span class="text-amber-400 text-xs px-0.5"><i class="fa-solid fa-sun"></i></span><span class="text-sky-400">lux</span></span>
                     </div>
                     <div>
                         <h2 class="text-lg font-black tracking-wider text-white">ECOLUX</h2>
-                        <p class="text-[9px] text-cyan-400 font-semibold uppercase tracking-widest">Excelencia en Limpieza</p>
+                        <p class="text-[9px] text-sky-400 font-semibold uppercase tracking-widest">Excelencia en Limpieza</p>
                     </div>
                 </div>
             </div>
@@ -125,7 +126,7 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col">
-                            <h3 class="font-bold text-slate-700 mb-3"><i class="fa-solid fa-clock ecolux-text mr-2"></i> Detalle de Antigüedad del Personal</h3>
+                            <h3 class="font-bold text-slate-700 mb-3"><i class="fa-solid fa-clock ecolux-text mr-2"></i> Antigüedad del Personal Activo</h3>
                             <div class="flex-1 overflow-y-auto max-h-60 space-y-2 pr-2" id="dashboard-antiguedad-list"></div>
                         </div>
 
@@ -254,22 +255,36 @@
                         <form onsubmit="handleTareaSubmit(event)" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
                             <div>
                                 <label class="block text-xs font-medium text-slate-600 mb-1">Fecha de la Tarea</label>
-                                <input type="date" id="tarea-fecha" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#005b7f] focus:outline-none">
+                                <input type="date" id="tarea-fecha" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#0077b6] focus:outline-none">
                             </div>
                             <div class="md:col-span-2">
                                 <label class="block text-xs font-medium text-slate-600 mb-1">Detalle de la Tarea</label>
-                                <input type="text" id="tarea-detalle" placeholder="Ej. Revisar arqueo de caja..." required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#005b7f] focus:outline-none">
+                                <input type="text" id="tarea-detalle" placeholder="Ej. Revisar arqueo de caja..." required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#0077b6] focus:outline-none">
                             </div>
                             <div>
                                 <button type="submit" class="w-full ecolux-primary ecolux-primary-hover text-white font-medium py-2 px-4 rounded-xl text-sm transition shadow-sm">Agregar Tarea</button>
                             </div>
                         </form>
                     </div>
+                    
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                        <div class="p-4 border-b border-slate-100 bg-slate-50 flex flex-col sm:flex-row justify-between items-center gap-4">
-                            <h3 class="font-bold text-slate-800 text-sm">Listado de Tareas</h3>
-                            <div class="w-full sm:w-72">
-                                <input type="text" id="buscador-tareas" oninput="renderTareas()" placeholder="Buscar por detalle..." class="w-full rounded-xl border border-slate-300 px-3 py-1.5 text-sm focus:ring-2 focus:ring-[#005b7f] focus:outline-none bg-white">
+                        <div class="p-4 border-b border-slate-100 bg-slate-50 flex flex-col md:flex-row justify-between items-center gap-4">
+                            <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                                <!-- Opciones de filtro de estado -->
+                                <div class="inline-flex rounded-xl bg-slate-200 p-1 text-xs font-medium">
+                                    <button onclick="setFiltroEstadoTareas('Todas')" id="btn-tarea-todas" class="px-3 py-1.5 rounded-lg bg-white text-slate-800 shadow-sm transition font-semibold">Todas</button>
+                                    <button onclick="setFiltroEstadoTareas('Pendiente')" id="btn-tarea-pendientes" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-800 transition">Pendientes</button>
+                                    <button onclick="setFiltroEstadoTareas('Hecha')" id="btn-tarea-hechas" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-800 transition">Hechas</button>
+                                </div>
+                                <!-- Filtro por Fecha Específica -->
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-xs font-semibold text-slate-500">Fecha:</span>
+                                    <input type="date" id="filtro-fecha-tareas" onchange="renderTareas()" class="rounded-xl border border-slate-300 px-2.5 py-1 text-xs bg-white focus:ring-2 focus:ring-[#0077b6] focus:outline-none">
+                                    <button onclick="limpiarFiltroFechaTareas()" class="text-xs text-slate-500 hover:text-slate-800 underline px-1" title="Ver todas las fechas">Limpiar</button>
+                                </div>
+                            </div>
+                            <div class="w-full md:w-64">
+                                <input type="text" id="buscador-tareas" oninput="renderTareas()" placeholder="Buscar por detalle..." class="w-full rounded-xl border border-slate-300 px-3 py-1.5 text-sm focus:ring-2 focus:ring-[#0077b6] focus:outline-none bg-white">
                             </div>
                         </div>
                         <div class="overflow-x-auto">
@@ -302,29 +317,58 @@
                     </div>
 
                     <div id="form-factura-container" class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200">
-                        <h3 class="font-semibold text-slate-800 mb-3 text-sm">Registrar Factura</h3>
-                        <form onsubmit="handleFacturaSubmit(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
-                            <div>
-                                <label class="block text-xs font-medium text-slate-600 mb-1">Nº de Factura</label>
-                                <input type="text" id="factura-numero" placeholder="0001-00001234" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#005b7f] focus:outline-none">
+                        <h3 class="font-semibold text-slate-800 mb-3 text-sm">Registrar Comprobante / Factura</h3>
+                        <form onsubmit="handleFacturaSubmit(event)" class="space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-600 mb-1">Tipo de Comprobante</label>
+                                    <select id="factura-tipo-comprobante" onchange="toggleAsociacionComprobante()" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#0077b6] focus:outline-none bg-white">
+                                        <option value="Factura">Factura</option>
+                                        <option value="Nota de Crédito">Nota de Crédito</option>
+                                        <option value="Nota de Débito">Nota de Débito</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-600 mb-1">Letra</label>
+                                    <select id="factura-letra" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#0077b6] focus:outline-none bg-white">
+                                        <option value="A">A</option>
+                                        <option value="B">B</option>
+                                        <option value="C">C</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-600 mb-1">Nº de Comprobante</label>
+                                    <input type="text" id="factura-numero" placeholder="0001-00001234" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#0077b6] focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-600 mb-1">Fecha de Vencimiento / Emisión</label>
+                                    <input type="date" id="factura-vencimiento" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#0077b6] focus:outline-none">
+                                </div>
                             </div>
-                            <div>
-                                <label class="block text-xs font-medium text-slate-600 mb-1">Fecha de Vencimiento</label>
-                                <input type="date" id="factura-vencimiento" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#005b7f] focus:outline-none">
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-end">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-600 mb-1">Razón Social</label>
+                                    <input type="text" id="factura-razon" placeholder="Nombre cliente/proveedor" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#0077b6] focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-600 mb-1">Monto Total ($)</label>
+                                    <input type="number" step="0.01" id="factura-monto" placeholder="0.00" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#0077b6] focus:outline-none">
+                                </div>
+                                <div id="container-factura-asociada" class="hidden">
+                                    <label class="block text-xs font-medium text-amber-700 mb-1">Aplicar a Factura Origen</label>
+                                    <select id="factura-asociada-id" class="w-full rounded-xl border border-amber-300 bg-amber-50 px-3 py-2 text-sm focus:ring-2 focus:ring-[#0077b6] focus:outline-none">
+                                        <option value="">-- Seleccionar factura origen --</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div>
-                                <label class="block text-xs font-medium text-slate-600 mb-1">Razón Social</label>
-                                <input type="text" id="factura-razon" placeholder="Nombre cliente/proveedor" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#005b7f] focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-slate-600 mb-1">Monto Total ($)</label>
-                                <input type="number" step="0.01" id="factura-monto" placeholder="0.00" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#005b7f] focus:outline-none">
-                            </div>
-                            <div>
-                                <button type="submit" class="w-full ecolux-primary ecolux-primary-hover text-white font-medium py-2 px-4 rounded-xl text-sm transition shadow-sm">Guardar Factura</button>
+                            
+                            <div class="flex justify-end pt-2">
+                                <button type="submit" class="ecolux-primary ecolux-primary-hover text-white font-medium py-2.5 px-6 rounded-xl text-sm transition shadow-sm">Guardar Comprobante</button>
                             </div>
                         </form>
                     </div>
+
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
                         <div class="p-4 border-b border-slate-100 bg-slate-50 flex flex-col md:flex-row justify-between items-center gap-4">
                             <div class="flex items-center gap-2">
@@ -336,17 +380,19 @@
                                 </div>
                             </div>
                             <div class="w-full md:w-72">
-                                <input type="text" id="buscador-facturas" oninput="renderFacturas()" placeholder="Buscar por Nº o Razón Social..." class="w-full rounded-xl border border-slate-300 px-3 py-1.5 text-sm focus:ring-2 focus:ring-[#005b7f] focus:outline-none bg-white">
+                                <input type="text" id="buscador-facturas" oninput="renderFacturas()" placeholder="Buscar por Nº o Razón Social..." class="w-full rounded-xl border border-slate-300 px-3 py-1.5 text-sm focus:ring-2 focus:ring-[#0077b6] focus:outline-none bg-white">
                             </div>
                         </div>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left border-collapse">
                                 <thead>
                                     <tr class="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider border-b border-slate-100">
-                                        <th class="px-6 py-3 font-semibold">Nº Factura</th>
+                                        <th class="px-6 py-3 font-semibold">Tipo / Letra</th>
+                                        <th class="px-6 py-3 font-semibold">Nº Comprobante</th>
                                         <th class="px-6 py-3 font-semibold">Vencimiento</th>
                                         <th class="px-6 py-3 font-semibold">Razón Social</th>
                                         <th class="px-6 py-3 font-semibold">Monto Total</th>
+                                        <th class="px-6 py-3 font-semibold">Aplicado A</th>
                                         <th class="px-6 py-3 font-semibold">Estado</th>
                                         <th class="px-6 py-3 font-semibold text-right action-col">Acciones</th>
                                     </tr>
@@ -375,7 +421,7 @@
                         <form onsubmit="handleRetencionSubmit(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
                             <div>
                                 <label class="block text-xs font-medium text-slate-600 mb-1">Seleccionar Factura</label>
-                                <select id="retencion-factura-select" onchange="onSelectFacturaRetencion()" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#005b7f] focus:outline-none bg-white">
+                                <select id="retencion-factura-select" onchange="onSelectFacturaRetencion()" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#0077b6] focus:outline-none bg-white">
                                     <option value="">-- Seleccione factura --</option>
                                 </select>
                             </div>
@@ -385,11 +431,11 @@
                             </div>
                             <div>
                                 <label class="block text-xs font-medium text-slate-600 mb-1">Importe Abonado ($)</label>
-                                <input type="number" step="0.01" id="retencion-abonado" placeholder="0.00" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#005b7f] focus:outline-none">
+                                <input type="number" step="0.01" id="retencion-abonado" placeholder="0.00" required class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#0077b6] focus:outline-none">
                             </div>
                             <div>
                                 <label class="block text-xs font-medium text-slate-600 mb-1">Estado</label>
-                                <select id="retencion-estado" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#005b7f] focus:outline-none bg-white">
+                                <select id="retencion-estado" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-[#0077b6] focus:outline-none bg-white">
                                     <option value="Pendiente">Pendiente</option>
                                     <option value="Abonada">Abonada</option>
                                 </select>
@@ -410,7 +456,7 @@
                                 </div>
                             </div>
                             <div class="w-full md:w-72">
-                                <input type="text" id="buscador-retenciones" oninput="renderRetenciones()" placeholder="Buscar por Nº factura o razón social..." class="w-full rounded-xl border border-slate-300 px-3 py-1.5 text-sm focus:ring-2 focus:ring-[#005b7f] focus:outline-none bg-white">
+                                <input type="text" id="buscador-retenciones" oninput="renderRetenciones()" placeholder="Buscar por Nº factura o razón social..." class="w-full rounded-xl border border-slate-300 px-3 py-1.5 text-sm focus:ring-2 focus:ring-[#0077b6] focus:outline-none bg-white">
                             </div>
                         </div>
                         <div class="overflow-x-auto">
@@ -472,8 +518,8 @@
                 { id: 2, fecha: new Date(Date.now() + 86400000).toISOString().split('T')[0], detalle: 'Reunión con proveedores externos', estado: 'Pendiente' }
             ],
             facturas: [
-                { id: 1, numero: '0001-00000150', vencimiento: '2026-04-15', razon: 'Distribuidora del Sur SA', monto: 125000, estado: 'Pendiente' },
-                { id: 2, numero: '0001-00000151', vencimiento: '2026-04-20', razon: 'Logística Norte SRL', monto: 84000, estado: 'Abonada' }
+                { id: 1, tipoComprobante: 'Factura', letra: 'A', numero: '0001-00000150', vencimiento: '2026-04-15', razon: 'Distribuidora del Sur SA', monto: 125000, facturaAsociadaId: null, estado: 'Pendiente' },
+                { id: 2, tipoComprobante: 'Factura', letra: 'B', numero: '0001-00000151', vencimiento: '2026-04-20', razon: 'Logística Norte SRL', monto: 84000, facturaAsociadaId: null, estado: 'Abonada' }
             ],
             retenciones: [
                 { id: 1, facturaId: 2, numero: '0001-00000151', razon: 'Logística Norte SRL', montoTotal: 84000, abonado: 80000, estado: 'Abonada' }
@@ -487,6 +533,7 @@
         let currentEditingIdx = null;
         let filtroFacturasActual = 'Todas';
         let filtroRetencionesActual = 'Todas';
+        let filtroEstadoTareasActual = 'Todas';
 
         if(isLoggedIn) {
             document.getElementById('login-screen').classList.add('hidden');
@@ -513,7 +560,7 @@
                 localStorage.setItem('ecolux_user_role', 'invitados');
                 initAppAfterLogin();
             } else {
-                alert("Datos incorrectos. Por favor, vuelva a ingresar los datos.");
+                showMessageBox("Datos incorrectos. Por favor, vuelva a ingresar los datos.");
                 document.getElementById('login-pass').value = '';
                 document.getElementById('login-user').focus();
             }
@@ -601,6 +648,10 @@
             return { anos: anos, texto: `${anos} ${anos === 1 ? 'año' : 'años'} ${meses > 0 ? 'y ' + meses + 'm' : ''}` };
         }
 
+        function showMessageBox(message) {
+            alert(message);
+        }
+
         function switchTab(tab) {
             ['dashboard', 'operarios', 'clientes', 'personal', 'proveedores', 'numeros', 'vehiculos', 'tareas', 'facturas', 'retenciones'].forEach(t => {
                 const el = document.getElementById(`view-${t}`);
@@ -633,7 +684,10 @@
             if(tab === 'numeros') renderNumeros();
             if(tab === 'vehiculos') renderVehiculos();
             if(tab === 'tareas') renderTareas();
-            if(tab === 'facturas') renderFacturas();
+            if(tab === 'facturas') {
+                actualizarSelectFacturasAsociadas();
+                renderFacturas();
+            }
             if(tab === 'retenciones') {
                 actualizarSelectFacturasRetencion();
                 renderRetenciones();
@@ -642,7 +696,8 @@
         }
 
         function renderDashboard() {
-            let activos = db.operarios.filter(o => !o.egreso || o.egreso.trim() === "").length;
+            let activosList = db.operarios.filter(o => !o.egreso || o.egreso.trim() === "");
+            let activos = activosList.length;
             let inactivos = db.operarios.length - activos;
             let clientesActivos = db.clientes.filter(c => !c.estado || c.estado === 'Activo').length;
             let clientesInactivos = db.clientes.length - clientesActivos;
@@ -650,16 +705,21 @@
             const tareasPend = db.tareas.filter(t => t.estado === 'Pendiente').length;
             document.getElementById('kpi-tareas-pendientes').innerText = tareasPend;
 
+            // Renderizar únicamente empleados activos en la lista de antigüedad
             let listContainer = document.getElementById('dashboard-antiguedad-list');
             listContainer.innerHTML = '';
-            db.operarios.forEach(o => {
-                let ant = calcularAntiguedadDetalle(o.ingreso);
-                listContainer.innerHTML += `
-                    <div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl text-xs">
-                        <span class="font-medium text-slate-800">${o.nombre}</span>
-                        <span class="px-2.5 py-1 bg-blue-50 ecolux-text font-bold rounded-lg">${ant.texto}</span>
-                    </div>`;
-            });
+            if(activosList.length === 0) {
+                listContainer.innerHTML = `<div class="p-3 text-center text-xs text-slate-400">No hay operarios activos registrados.</div>`;
+            } else {
+                activosList.forEach(o => {
+                    let ant = calcularAntiguedadDetalle(o.ingreso);
+                    listContainer.innerHTML += `
+                        <div class="flex justify-between items-center p-2.5 bg-slate-50 rounded-xl text-xs">
+                            <span class="font-medium text-slate-800">${o.nombre}</span>
+                            <span class="px-2.5 py-1 bg-sky-50 ecolux-text font-bold rounded-lg">${ant.texto}</span>
+                        </div>`;
+                });
+            }
 
             document.getElementById('kpi-operarios').innerText = db.operarios.length;
             document.getElementById('kpi-activos').innerText = activos;
@@ -679,7 +739,7 @@
                 taskTbody.innerHTML = `<tr><td colspan="3" class="px-6 py-4 text-center text-slate-400">No hay tareas programadas para hoy ni para mañana.</td></tr>`;
             } else {
                 tareasFiltradas.forEach(t => {
-                    const badgeTag = t.fecha === hoyStr ? '<span class="bg-blue-100 ecolux-text text-xs px-2 py-0.5 rounded font-semibold ml-2">Hoy</span>' : '<span class="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-semibold ml-2">Mañana</span>';
+                    const badgeTag = t.fecha === hoyStr ? '<span class="bg-sky-100 ecolux-text text-xs px-2 py-0.5 rounded font-semibold ml-2">Hoy</span>' : '<span class="bg-purple-100 text-purple-700 text-xs px-2 py-0.5 rounded font-semibold ml-2">Mañana</span>';
                     const estadoBadge = t.estado === 'Hecha' ? '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700">Hecha</span>' : '<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">Pendiente</span>';
                     taskTbody.innerHTML += `
                         <tr class="hover:bg-slate-50 cursor-pointer transition" onclick="showModalDetalleFinanciero('tarea', ${t.id})">
@@ -727,7 +787,7 @@
                     labels: Object.keys(cats), 
                     datasets: [{ 
                         data: Object.values(cats), 
-                        backgroundColor: ['#005b7f', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4'] 
+                        backgroundColor: ['#0077b6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#0284c7'] 
                     }] 
                 },
                 options: { responsive: true, maintainAspectRatio: false }
@@ -757,7 +817,7 @@
                         <td class="p-4 font-medium">${op.nombre}</td>
                         <td class="p-4 font-semibold text-slate-600">${ant.texto}</td>
                         <td class="p-4">${badge}</td>
-                        <td class="p-4"><span class="px-2.5 py-1 bg-cyan-50 ecolux-text rounded-lg text-xs font-semibold">${catMostrada}</span></td>
+                        <td class="p-4"><span class="px-2.5 py-1 bg-sky-50 ecolux-text rounded-lg text-xs font-semibold">${catMostrada}</span></td>
                         ${actionsTd}
                     </tr>`;
             });
@@ -862,7 +922,7 @@
             });
         }
 
-        // --- TAREAS, FACTURAS Y RETENCIONES ---
+        // --- GESTIÓN DE TAREAS ---
         function handleTareaSubmit(e) {
             e.preventDefault();
             if(currentUserRole === 'invitados') return;
@@ -878,15 +938,40 @@
             renderTareas();
         }
 
+        function setFiltroEstadoTareas(estado) {
+            filtroEstadoTareasActual = estado;
+            ['todas', 'pendientes', 'hechas'].forEach(e => {
+                const btn = document.getElementById(`btn-tarea-${e}`);
+                if(btn) btn.className = "px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-800 transition";
+            });
+            const activeBtn = document.getElementById(`btn-tarea-${estado.toLowerCase() === 'todas' ? 'todas' : estado.toLowerCase() === 'pendiente' ? 'pendientes' : 'hechas'}`);
+            if(activeBtn) activeBtn.className = "px-3 py-1.5 rounded-lg bg-white text-slate-800 shadow-sm transition font-semibold";
+            renderTareas();
+        }
+
+        function limpiarFiltroFechaTareas() {
+            document.getElementById('filtro-fecha-tareas').value = '';
+            renderTareas();
+        }
+
         function renderTareas() {
-            const filtro = document.getElementById('buscador-tareas').value.toLowerCase();
+            const filtroTexto = document.getElementById('buscador-tareas').value.toLowerCase();
+            const filtroFecha = document.getElementById('filtro-fecha-tareas').value;
             const tbody = document.getElementById('tabla-tareas-body');
             tbody.innerHTML = '';
-            const filtradas = db.tareas.filter(t => t.detalle.toLowerCase().includes(filtro));
+            
+            let filtradas = db.tareas.filter(t => {
+                const coincideTexto = t.detalle.toLowerCase().includes(filtroTexto);
+                const coincideEstado = filtroEstadoTareasActual === 'Todas' || t.estado === filtroEstadoTareasActual;
+                const coincideFecha = !filtroFecha || t.fecha === filtroFecha;
+                return coincideTexto && coincideEstado && coincideFecha;
+            });
+
             if(filtradas.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="px-6 py-4 text-center text-slate-400">No se encontraron tareas.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="px-6 py-4 text-center text-slate-400">No se encontraron tareas con los filtros seleccionados.</td></tr>`;
                 return;
             }
+
             filtradas.forEach(t => {
                 let estadoCell = currentUserRole === 'invitados' ? 
                     `<span class="px-2.5 py-1 rounded-full text-xs font-semibold ${t.estado === 'Hecha' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'}">${t.estado}</span>` :
@@ -910,20 +995,53 @@
             });
         }
 
+        // --- GESTIÓN DE FACTURAS Y COMPROBANTES ASOCIADOS ---
+        function toggleAsociacionComprobante() {
+            const tipoComp = document.getElementById('factura-tipo-comprobante').value;
+            const containerAsoc = document.getElementById('container-factura-asociada');
+            const selectAsoc = document.getElementById('factura-asociada-id');
+            
+            if (tipoComp === 'Nota de Crédito' || tipoComp === 'Nota de Débito') {
+                containerAsoc.classList.remove('hidden');
+                selectAsoc.required = true;
+                actualizarSelectFacturasAsociadas();
+            } else {
+                containerAsoc.classList.add('hidden');
+                selectAsoc.required = false;
+                selectAsoc.value = '';
+            }
+        }
+
+        function actualizarSelectFacturasAsociadas() {
+            const select = document.getElementById('factura-asociada-id');
+            if(!select) return;
+            select.innerHTML = '<option value="">-- Seleccionar factura origen --</option>';
+            db.facturas.filter(f => f.tipoComprobante === 'Factura').forEach(f => {
+                select.innerHTML += `<option value="${f.id}">Factura ${f.letra} N° ${f.numero} - ${f.razon} ($${Number(f.monto).toLocaleString('es-AR')})</option>`;
+            });
+        }
+
         function handleFacturaSubmit(e) {
             e.preventDefault();
             if(currentUserRole === 'invitados') return;
+            const tipoComp = document.getElementById('factura-tipo-comprobante').value;
+            const facturaAsocId = (tipoComp === 'Nota de Crédito' || tipoComp === 'Nota de Débito') ? Number(document.getElementById('factura-asociada-id').value) : null;
+
             const nueva = {
                 id: Date.now(),
+                tipoComprobante: tipoComp,
+                letra: document.getElementById('factura-letra').value,
                 numero: document.getElementById('factura-numero').value,
                 vencimiento: document.getElementById('factura-vencimiento').value,
                 razon: document.getElementById('factura-razon').value,
                 monto: Number(document.getElementById('factura-monto').value),
+                facturaAsociadaId: facturaAsocId,
                 estado: 'Pendiente'
             };
             db.facturas.push(nueva);
             persistData();
             e.target.reset();
+            toggleAsociacionComprobante();
             renderFacturas();
         }
 
@@ -939,23 +1057,48 @@
         }
 
         function renderFacturas() {
-            const totalPendiente = db.facturas.filter(f => f.estado === 'Pendiente').reduce((acc, f) => acc + Number(f.monto), 0);
+            let totalPendienteNeto = 0;
+            db.facturas.forEach(f => {
+                if(f.estado === 'Pendiente') {
+                    if(f.tipoComprobante === 'Nota de Crédito') {
+                        totalPendienteNeto -= Number(f.monto);
+                    } else {
+                        totalPendienteNeto += Number(f.monto);
+                    }
+                }
+            });
+
             const kpiEl = document.getElementById('kpi-facturas-pendiente-monto');
-            if(kpiEl) kpiEl.innerText = `$${totalPendiente.toLocaleString('es-AR', { minimumFractionDigits: 2 })}`;
+            if(kpiEl) kpiEl.innerText = `$${totalPendienteNeto.toLocaleString('es-AR', { minimumFractionDigits: 2 })}`;
 
             const textoBusqueda = document.getElementById('buscador-facturas').value.toLowerCase();
             const tbody = document.getElementById('tabla-facturas-body');
             tbody.innerHTML = '';
+            
             let filtradas = db.facturas.filter(f => {
                 const coincideTexto = f.numero.toLowerCase().includes(textoBusqueda) || f.razon.toLowerCase().includes(textoBusqueda);
                 const coincideEstado = filtroFacturasActual === 'Todas' || f.estado === filtroFacturasActual;
                 return coincideTexto && coincideEstado;
             });
+
             if(filtradas.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-4 text-center text-slate-400">No se encontraron facturas.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" class="px-6 py-4 text-center text-slate-400">No se encontraron comprobantes registrados.</td></tr>`;
                 return;
             }
+
             filtradas.forEach(f => {
+                let asociadoTexto = '-';
+                if(f.facturaAsociadaId) {
+                    const origen = db.facturas.find(orig => orig.id === f.facturaAsociadaId);
+                    if(origen) {
+                        asociadoTexto = `<span class="text-xs bg-amber-50 text-amber-800 px-2 py-1 rounded font-medium" title="Aplica a ${origen.tipoComprobante} ${origen.letra} N° ${origen.numero}">${origen.tipoComprobante} ${origen.letra} #${origen.numero}</span>`;
+                    }
+                }
+
+                let badgeTipoColor = 'bg-sky-100 text-sky-800';
+                if(f.tipoComprobante === 'Nota de Crédito') badgeTipoColor = 'bg-rose-100 text-rose-800';
+                if(f.tipoComprobante === 'Nota de Débito') badgeTipoColor = 'bg-purple-100 text-purple-800';
+
                 let estadoCell = currentUserRole === 'invitados' ?
                     `<span class="px-2.5 py-1 rounded-full text-xs font-semibold ${f.estado === 'Abonada' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${f.estado}</span>` :
                     `<select onchange="cambiarEstadoItem('facturas', ${f.id}, this.value)" class="text-xs font-semibold px-2.5 py-1 rounded-full border border-slate-200 ${f.estado === 'Abonada' ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">
@@ -968,24 +1111,29 @@
                         <button onclick="eliminarFinanciero('facturas', ${f.id})" class="text-slate-400 hover:text-rose-600 p-1 rounded"><i class="fa-solid fa-trash"></i></button>
                     </td>`;
 
+                let signoMonto = f.tipoComprobante === 'Nota de Crédito' ? '-$' : '$';
+
                 tbody.innerHTML += `
                     <tr class="hover:bg-slate-50 cursor-pointer transition" onclick="if(event.target.tagName!=='SELECT' && event.target.tagName!=='BUTTON') showModalDetalleFinanciero('factura', ${f.id})">
+                        <td class="px-6 py-3"><span class="px-2 py-0.5 rounded text-xs font-bold ${badgeTipoColor}">${f.tipoComprobante} ${f.letra}</span></td>
                         <td class="px-6 py-3 font-semibold text-slate-800">${f.numero}</td>
                         <td class="px-6 py-3 text-slate-600">${f.vencimiento}</td>
                         <td class="px-6 py-3 text-slate-600">${f.razon}</td>
-                        <td class="px-6 py-3 font-medium text-slate-700">$${f.monto.toLocaleString('es-AR', { minimumFractionDigits: 2 })}</td>
+                        <td class="px-6 py-3 font-medium ${f.tipoComprobante === 'Nota de Crédito' ? 'text-rose-600' : 'text-slate-700'}">${signoMonto}${f.monto.toLocaleString('es-AR', { minimumFractionDigits: 2 })}</td>
+                        <td class="px-6 py-3">${asociadoTexto}</td>
                         <td class="px-6 py-3">${estadoCell}</td>
                         ${actionsTd}
                     </tr>`;
             });
         }
 
+        // --- RETENCIONES ---
         function actualizarSelectFacturasRetencion() {
             const select = document.getElementById('retencion-factura-select');
             if(!select) return;
             select.innerHTML = '<option value="">-- Seleccione factura --</option>';
             db.facturas.forEach(f => {
-                select.innerHTML += `<option value="${f.id}">${f.numero} - ${f.razon} ($${f.monto})</option>`;
+                select.innerHTML += `<option value="${f.id}">${f.tipoComprobante} ${f.letra} N° ${f.numero} - ${f.razon} ($${f.monto})</option>`;
             });
         }
 
@@ -1096,7 +1244,10 @@
         function eliminarFinanciero(tipo, id) {
             if(currentUserRole === 'invitados') return;
             db[tipo] = db[tipo].filter(i => i.id !== id);
-            if(tipo === 'facturas') db.retenciones = db.retenciones.filter(r => r.facturaId !== id);
+            if(tipo === 'facturas') {
+                db.retenciones = db.retenciones.filter(r => r.facturaId !== id);
+                db.facturas.forEach(f => { if(f.facturaAsociadaId === id) f.facturaAsociadaId = null; });
+            }
             persistData();
             if(tipo === 'tareas') renderTareas();
             if(tipo === 'facturas') {
@@ -1118,10 +1269,17 @@
             } else if(tipo === 'factura') {
                 const f = db.facturas.find(i => i.id === id);
                 if(!f) return;
-                title = 'Detalle de Factura';
-                html = `<div><strong class="text-slate-500 block text-xs">NÚMERO</strong><span class="font-bold text-base">${f.numero}</span></div>
+                title = 'Detalle de Comprobante';
+                let asociadoHtml = 'Ninguna';
+                if(f.facturaAsociadaId) {
+                    const origen = db.facturas.find(orig => orig.id === f.facturaAsociadaId);
+                    if(origen) asociadoHtml = `${origen.tipoComprobante} ${origen.letra} N° ${origen.numero} (${origen.razon})`;
+                }
+                html = `<div><strong class="text-slate-500 block text-xs">TIPO / LETRA</strong><span class="font-bold text-base">${f.tipoComprobante} ${f.letra}</span></div>
+                        <div><strong class="text-slate-500 block text-xs">NÚMERO</strong><span class="font-bold text-base">${f.numero}</span></div>
                         <div><strong class="text-slate-500 block text-xs">RAZÓN SOCIAL</strong><span>${f.razon}</span></div>
                         <div><strong class="text-slate-500 block text-xs">VENCIMIENTO</strong><span>${f.vencimiento}</span></div>
+                        <div><strong class="text-slate-500 block text-xs">COMPROBANTE ORIGEN APLICADO</strong><span>${asociadoHtml}</span></div>
                         <div><strong class="text-slate-500 block text-xs">MONTO TOTAL</strong><span class="font-bold text-lg">$${f.monto.toLocaleString('es-AR', { minimumFractionDigits: 2 })}</span></div>`;
             } else if(tipo === 'retencion') {
                 const r = db.retenciones.find(i => i.id === id);
@@ -1250,7 +1408,7 @@
 
         function deleteItem(type, idx) {
             if(currentUserRole === 'invitados') return;
-            if(confirm("¿Seguro de eliminar?")) {
+            if(confirm("¿Seguro de eliminar este registro?")) {
                 db[type].splice(idx, 1);
                 persistData();
             }
@@ -1264,6 +1422,7 @@
             renderNumeros(document.getElementById('searchNumero').value);
             renderVehiculos(document.getElementById('searchVehiculo').value);
             renderTareas();
+            actualizarSelectFacturasAsociadas();
             renderFacturas();
             renderRetenciones();
         }
@@ -1340,7 +1499,7 @@
                     }));
                 }
                 persistData();
-                alert("¡Todas las solapas del Excel de Ecolux se importaron y guardaron con éxito!");
+                showMessageBox("¡Todas las solapas del Excel de Ecolux se importaron y guardaron con éxito!");
             };
             reader.readAsArrayBuffer(file);
         });
